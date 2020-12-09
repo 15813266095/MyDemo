@@ -4,28 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f32e9545-eaf5-4d9b-a303-3d66679bf562" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MyDemo.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/.mvn/wrapper/MavenWrapperDownloader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/mvnw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/DemoClientApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/ClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/test/java/com/zkw/springboot/DemoClientApplicationTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/Server.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/ServerHandler.java" afterDir="false" />
-    </list>
+    <list default="true" id="f32e9545-eaf5-4d9b-a303-3d66679bf562" name="Default Changelist" comment="test" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -113,8 +92,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1607480054922</updated>
-      <workItem from="1607480056459" duration="5553000" />
+      <workItem from="1607480056459" duration="6122000" />
     </task>
+    <task id="LOCAL-00001" summary="test">
+      <created>1607485688440</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1607485688440</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -122,5 +109,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="test" />
+    <option name="LAST_COMMIT_MESSAGE" value="test" />
   </component>
 </project>
