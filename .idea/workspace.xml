@@ -5,22 +5,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f32e9545-eaf5-4d9b-a303-3d66679bf562" name="Default Changelist" comment="test">
-      <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/bean/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/protocal/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/protocal/MessageType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/bean/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/protocal/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/protocal/MessageType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/DemoClientApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/DemoClientApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/ClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/DemoServerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/DemoServerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/ServerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo-server/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="alwaysUpdateSnapshots" value="true" />
+      </MavenGeneralSettings>
+    </option>
   </component>
   <component name="ProjectId" id="1lOtdgABWJ5Mc1O5qZu79P08KwG" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -42,7 +71,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -50,9 +79,13 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\IdeaProjects\MyDemo\demo-server\src\main\java\com\zkw\springboot" />
+      <recent name="C:\Users\Administrator\IdeaProjects\MyDemo\demo-client\src\main\java\com\zkw\springboot" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Administrator\IdeaProjects\MyDemo" />
     </key>
@@ -64,18 +97,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.DemoClientApplication">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Spring Boot.DemoServerApplication">
     <configuration name="DemoClientApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="demo-client" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.zkw.springboot.DemoClientApplication" />
@@ -99,7 +121,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1607480054922</updated>
-      <workItem from="1607480056459" duration="7009000" />
+      <workItem from="1607480056459" duration="7942000" />
+      <workItem from="1607488962213" duration="2014000" />
+      <workItem from="1607496593328" duration="7042000" />
+      <workItem from="1607503739920" duration="5138000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <created>1607485688440</created>
@@ -115,15 +140,45 @@
       <option name="project" value="LOCAL" />
       <updated>1607486229014</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="test">
+      <created>1607488065357</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1607488065357</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="test" />
     <option name="LAST_COMMIT_MESSAGE" value="test" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/ServerHandler.java</url>
+          <line>10</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
