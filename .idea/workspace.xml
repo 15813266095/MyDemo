@@ -4,26 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f32e9545-eaf5-4d9b-a303-3d66679bf562" name="Default Changelist" comment="test">
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/bean/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/protocal/Message.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/protocal/MessageType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/bean/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/protocal/Message.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/protocal/MessageType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+    <list default="true" id="f32e9545-eaf5-4d9b-a303-3d66679bf562" name="Default Changelist" comment="MyDemo, add, 初步搭建起客户端和服务端，并能实现简单的交互">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/DemoClientApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/DemoClientApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-client/src/main/java/com/zkw/springboot/netty/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/DemoServerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/DemoServerApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/java/com/zkw/springboot/netty/ServerHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-server/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/demo-server/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +108,7 @@
       <workItem from="1607480056459" duration="7942000" />
       <workItem from="1607488962213" duration="2014000" />
       <workItem from="1607496593328" duration="7042000" />
-      <workItem from="1607503739920" duration="5138000" />
+      <workItem from="1607503739920" duration="6105000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <created>1607485688440</created>
@@ -147,7 +131,14 @@
       <option name="project" value="LOCAL" />
       <updated>1607488065357</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="MyDemo, add, 初步搭建起客户端和服务端，并能实现简单的交互">
+      <created>1607509188743</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1607509188743</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,7 +159,8 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="test" />
-    <option name="LAST_COMMIT_MESSAGE" value="test" />
+    <MESSAGE value="MyDemo, add, 初步搭建起客户端和服务端，并能实现简单的交互" />
+    <option name="LAST_COMMIT_MESSAGE" value="MyDemo, add, 初步搭建起客户端和服务端，并能实现简单的交互" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

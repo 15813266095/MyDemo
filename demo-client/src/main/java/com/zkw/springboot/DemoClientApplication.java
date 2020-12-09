@@ -56,7 +56,7 @@ public class DemoClientApplication implements CommandLineRunner {
                     channel=channelFuture.channel();
                 }
                 else if ("quit".equals(input)) {
-                    channelFuture=null;
+                    channel.close();
                     channel=null;
                     //client.destroy();
                     System.out.println("断开连接");
