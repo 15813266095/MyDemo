@@ -7,10 +7,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class Server {
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -30,12 +35,14 @@ public class Server {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new ObjectDecoder(1024*1024,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
+                            pipeline.addLast(new ObjectEncoder());
+                            pipeline.addLast(new IdleStateHandler(3,2,2, TimeUnit.SECONDS));
                             pipeline.addLast(new ServerHandler());
                         }
                     });
             channelFuture = serverBootstrap.bind().sync();
             channel=channelFuture.channel();
-            System.out.println("开启服务端");
+            log.info("开启服务端");
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,6 +55,6 @@ public class Server {
         }
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();
-        System.out.println("关闭服务端完成");
+        log.info("关闭服务端完成");
     }
 }

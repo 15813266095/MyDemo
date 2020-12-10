@@ -5,11 +5,15 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
+@Slf4j
 @Component
 public class Client {
     NioEventLoopGroup group = new NioEventLoopGroup();
@@ -26,15 +30,16 @@ public class Client {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
+                            pipeline.addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
                             pipeline.addLast(new ClientHandler());
                         }
                     });
 
-            System.out.println("正在建立客户端连接");
+            log.info("正在建立客户端连接");
             channelFuture = bootstrap.connect().sync();
             channel=channelFuture.channel();
-            System.out.println("建立连接成功");
+            log.info("建立连接成功");
 
 
         }catch (Exception e){
@@ -49,6 +54,6 @@ public class Client {
             channel=null;
         }
         group.shutdownGracefully();
-        System.out.println("客户端成功关闭");
+        log.info("客户端成功关闭");
     }
 }
