@@ -16,16 +16,16 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         //cause.printStackTrace();
-        log.info("客户端关闭，断开连接");
+        log.error("客户端关闭，断开连接");
         ctx.close();
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message request) throws Exception {
         log.info("收到客户端消息，消息类型为"+request.getMessageType());
-        if(request.isActive()) {
+        if(request.getMessageType()!=MessageType.DISCONNECT) {
             User user = request.getUser();
-            Message response = new Message(true);
+            Message response = new Message();
             response.setMessageType(MessageType.SUCCESS);
             switch (request.getMessageType()){
                 //获取角色信息
@@ -90,7 +90,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
         if(readIdleTimes >= 3){
             log.info("服务器读空闲超过3次，关闭连接");
             Message message = new Message();
-            message.setActive(false);
+            message.setMessageType(MessageType.DISCONNECT);
             ctx.channel().writeAndFlush(message);
             ctx.channel().close().sync();
         }

@@ -30,7 +30,7 @@ public class DemoClientApplication implements CommandLineRunner {
         Channel channel = null;
         ChannelFuture channelFuture = null;
 
-        Message message = new Message(true);
+        Message message = new Message();
         User user = new User();
         message.setMessageType(MessageType.GET);
         message.setDirection("right");
@@ -60,7 +60,9 @@ public class DemoClientApplication implements CommandLineRunner {
                 }
                 else if ("quit".equals(input)) {
                     if(channel!=null){
-                        channel.writeAndFlush(new Message(false));
+                        Message request = new Message();
+                        request.setMessageType(MessageType.DISCONNECT);
+                        channel.writeAndFlush(request);
                         channel.close();
                     }
                     channel=null;
