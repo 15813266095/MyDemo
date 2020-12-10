@@ -36,7 +36,7 @@ public class Server {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new ObjectDecoder(1024*1024,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
-                            pipeline.addLast(new IdleStateHandler(3,2,2, TimeUnit.SECONDS));
+                            pipeline.addLast(new IdleStateHandler(5,2,2, TimeUnit.SECONDS));
                             pipeline.addLast(new ServerHandler());
                         }
                     });

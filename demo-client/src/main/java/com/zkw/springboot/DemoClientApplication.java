@@ -2,8 +2,8 @@ package com.zkw.springboot;
 
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.netty.Client;
-import com.zkw.springboot.protocal.Message;
-import com.zkw.springboot.protocal.MessageType;
+import com.zkw.springboot.protocol.Message;
+import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +30,10 @@ public class DemoClientApplication implements CommandLineRunner {
         Channel channel = null;
         ChannelFuture channelFuture = null;
 
-        Message message = new Message();
+        Message message = new Message(true);
         User user = new User();
-        message.setMessageType(MessageType.LOGIN);
+        message.setMessageType(MessageType.GET);
+        message.setDirection("right");
         user.setAccount("123");
         user.setPassword("123");
         user.setUsername("zkw");
@@ -40,7 +41,6 @@ public class DemoClientApplication implements CommandLineRunner {
         user.setPosition_X(0);
         user.setPosition_Y(0);
         message.setUser(user);
-        message.setActive(true);
 
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
