@@ -55,7 +55,7 @@ public class DemoClientApplication implements CommandLineRunner {
             String input = reader.readLine();
             if (input != null) {
                 if("connect".equals(input)&&(channel==null||!channel.isActive())){
-                    channelFuture = client.start("localhost", 8088);
+                    channelFuture = client.start("localhost", 8881);
                     channel=channelFuture.channel();
                 }
                 else if ("quit".equals(input)) {
