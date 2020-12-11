@@ -9,6 +9,7 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -16,8 +17,11 @@ import java.net.InetSocketAddress;
 @Slf4j
 @Component
 public class Client {
-    NioEventLoopGroup group = new NioEventLoopGroup();
-    Channel channel = null;
+    private final NioEventLoopGroup group = new NioEventLoopGroup();
+    private Channel channel = null;
+    @Autowired
+    private ClientHandler clientHandler;
+
     public ChannelFuture start(String host,int port){
         ChannelFuture channelFuture = null;
         try {
@@ -32,20 +36,21 @@ public class Client {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
-                            pipeline.addLast(new ClientHandler());
+                            pipeline.addLast(clientHandler);
                         }
                     });
-
             log.info("正在建立客户端连接");
             channelFuture = bootstrap.connect().sync();
             channel=channelFuture.channel();
             log.info("建立连接成功");
-
-
         }catch (Exception e){
             e.printStackTrace();
         }
         return channelFuture;
+    }
+
+    public ClientHandler getClientHandler() {
+        return clientHandler;
     }
 
     public void destroy(){

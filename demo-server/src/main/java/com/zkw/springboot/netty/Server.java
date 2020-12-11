@@ -1,5 +1,6 @@
 package com.zkw.springboot.netty;
 
+import com.zkw.springboot.handler.HandlerManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -10,6 +11,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -18,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class Server {
+    @Autowired
+    private HandlerManager handlerManager;
+
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private Channel channel;
@@ -37,7 +42,7 @@ public class Server {
                             pipeline.addLast(new ObjectDecoder(1024*1024,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
                             pipeline.addLast(new IdleStateHandler(5,2,2, TimeUnit.SECONDS));
-                            pipeline.addLast(new ServerHandler());
+                            pipeline.addLast(new ServerHandler(handlerManager));
                         }
                     });
             channelFuture = serverBootstrap.bind().sync();

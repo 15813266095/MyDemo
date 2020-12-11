@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+<body>
+<form th:action="@{/operator}" th:object="${user}" method="post">
+    <span>角色账号：</span><input type="text" value="" th:value="*{account}" name="account"><br>
+
+    <span>角色名称：</span><input type="text" value="" th:value="*{username}" name="username"><br>
+
+    <span>角色坐标：</span><input type="text" value="" th:value="*{position_X}" name="position_X">
+    <input type="text" value="" th:value="*{position_Y}" name="position_Y"><br>
+
+    <span>角色地图：</span><input type="text" value="" th:value="*{scenes}" name="scenes"><br>
+
+    <button type="submit" name="action" value="move" th:text="角色移动"></button>
+    <button type="submit" th:text="切换地图"></button>
+    <button type="submit" th:text="断开连接"></button>
+</form>
+</body>
+</html>
