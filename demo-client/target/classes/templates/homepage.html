@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+<body>
+<form th:action="@{/operator}" th:object="${user}" method="post">
+    <span>角色账号：</span><input type="text" value="" th:value="*{account}" name="account" readonly><br>
+
+    <span>角色名称：</span><input type="text" value="" th:value="*{username}" name="username" readonly><br>
+
+    <span>角色坐标：</span><input type="text" value="" th:value="*{positionX}" name="positionX" style="width:30px;" readonly> ,
+    <input type="text" value="" th:value="*{positionY}" name="positionY" style="width:30px;" readonly><br>
+
+    <span>角色地图：</span><input type="text" value="" th:value="*{scenes}" name="scenes" readonly><br>
+
+    <button type="submit" name="move" value="forward" th:text="前"></button>
+    <button type="submit" name="move" value="backward" th:text="后"></button>
+    <button type="submit" name="move" value="left" th:text="左"></button>
+    <button type="submit" name="move" value="right" th:text="右"></button><br>
+    <button type="submit" name="changeScenes" value="map1" th:text="切换地图1"></button>
+    <button type="submit" name="changeScenes" value="map2" th:text="切换地图2"></button>
+    <button type="submit" name="changeScenes" value="map3" th:text="切换地图3"></button><br>
+    <button type="submit" name="disconnect" th:text="断开连接"></button><br><br>
+
+    <label th:text="${msg}"></label>
+</form>
+</body>
+</html>
