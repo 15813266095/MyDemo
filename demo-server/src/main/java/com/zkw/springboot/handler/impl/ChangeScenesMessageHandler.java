@@ -22,10 +22,12 @@ public class ChangeScenesMessageHandler implements IMessageHandler {
     @Override
     public void operate(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
+        user.setPositionX(0);
+        user.setPositionY(0);
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
-        user.setScenes("场景2");
         response.setDescription("当前角色场景为："+user.getScenes());
+        response.setUser(user);
         ctx.writeAndFlush(response);
     }
 }

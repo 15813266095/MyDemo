@@ -26,7 +26,7 @@ public class MoveMessageHandler implements IMessageHandler {
         response.setMessageType(MessageType.SUCCESS);
         user.move(request.getDirection());
         response.setUser(user);
-        response.setDescription("\n角色移动了，方向为"+request.getDirection()+ "\n当前角色位置为："+user.getArea());
+        response.setDescription("\n角色移动了，方向为"+request.getDirection()+ "，当前角色位置为："+user.getArea());
         ctx.writeAndFlush(response);
     }
 }
