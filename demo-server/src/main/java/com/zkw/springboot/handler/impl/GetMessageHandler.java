@@ -32,7 +32,7 @@ public class GetMessageHandler implements IMessageHandler {
         response.setUser(user);
         response.setDescription("\n角色名为：" +user.getUsername()+
                 "\n当前角色位置为："+user.getArea()+
-                "\n当前角色地图在："+user.getScenes());
+                "\n当前角色地图在：map"+user.getMapId());
         ctx.writeAndFlush(response);
     }
 }

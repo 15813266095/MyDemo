@@ -13,7 +13,7 @@ public class User implements Serializable {
 
     private Integer positionY;
 
-    private String scenes;
+    private Integer mapId;
 
     public String getAccount() {
         return account;
@@ -55,32 +55,45 @@ public class User implements Serializable {
         this.positionY = positionY;
     }
 
-    public String getScenes() {
-        return scenes;
+    public Integer getMapId() {
+        return mapId;
     }
 
-    public void setScenes(String scenes) {
-        this.scenes = scenes == null ? null : scenes.trim();
+    public void setMapId(Integer mapId) {
+        this.mapId = mapId;
     }
 
     public String getArea(){
-        return "当前角色位置为：("+this.getPositionX()+","+this.getPositionY()+")";
+        return "当前角色坐标为("+positionX+","+positionY+")";
     }
 
-    public void move(String direction){
+    public boolean move(String direction,Map map){
+        int[][] path = map.getPathNums();
         switch (direction){
-            case "right":
-                positionX++;
-                break;
-            case "left":
-                positionX--;
-                break;
             case "forward":
+                if(positionY+1>=path.length||path[positionY+1][positionX]==1){
+                    return false;
+                }
                 positionY++;
                 break;
             case "backward":
+                if(positionY-1<0||path[positionY-1][positionX]==1){
+                    return false;
+                }
                 positionY--;
-
+                break;
+            case "right":
+                if(positionX+1>=path[0].length||path[positionY][positionX+1]==1){
+                    return false;
+                }
+                positionX++;
+                break;
+            case "left":
+                if(positionX-1<0||path[positionY][positionX-1]==1){
+                    return false;
+                }
+                positionX--;
         }
+        return true;
     }
 }

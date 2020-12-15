@@ -1,5 +1,7 @@
 package com.zkw.springboot;
 
+import com.zkw.springboot.dao.MapMapper;
+import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.netty.Server;
 import io.netty.channel.ChannelFuture;
 import org.mybatis.spring.annotation.MapperScan;
@@ -13,6 +15,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DemoServerApplication implements CommandLineRunner {
     @Autowired
     Server server;
+    @Autowired
+    MapMapper mapMapper;
+    @Autowired
+    UserMapper userMapper;
 
     public static void main(String[] args) {
         SpringApplication.run(DemoServerApplication.class, args);

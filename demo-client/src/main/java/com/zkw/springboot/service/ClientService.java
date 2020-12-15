@@ -1,5 +1,6 @@
 package com.zkw.springboot.service;
 
+import com.zkw.springboot.bean.Map;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.netty.Client;
 import com.zkw.springboot.protocol.Message;
@@ -10,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -20,6 +23,7 @@ public class ClientService {
     private Client client;
     private Channel channel;
     private BlockingQueue<Message> queue = new LinkedBlockingQueue<>(1);
+    private List<Map> maps;
 
     public void put(Message message) throws InterruptedException {
         queue.put(message);
@@ -44,20 +48,19 @@ public class ClientService {
             Message request = new Message();
             request.setMessageType(MessageType.LOGIN);
             request.setUser(user);
-
             channel.writeAndFlush(request);
             try {
-                response = queue.take();
+                response = queue.poll(3, TimeUnit.SECONDS);
+                maps=response.getMapList();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
         }
-
         return response;
     }
 
-    public Message move(String direction,User user){
+    public Message move(String direction, User user){
         if(isActive()){
             Message request = new Message();
             request.setDirection(direction);
@@ -65,7 +68,8 @@ public class ClientService {
             request.setUser(user);
             try {
                 channel.writeAndFlush(request);
-                Message response = queue.take();
+                Message response = queue.poll(3, TimeUnit.SECONDS);
+                response.setMapList(maps);
                 return response;
             }catch (Exception e){
                 e.printStackTrace();
@@ -73,6 +77,7 @@ public class ClientService {
         }
         Message response = new Message();
         response.setMessageType(MessageType.ERROR);
+        response.setMapList(maps);
         return response;
     }
 
@@ -83,7 +88,8 @@ public class ClientService {
             request.setUser(user);
             try {
                 channel.writeAndFlush(request);
-                Message response = queue.take();
+                Message response = queue.poll(3, TimeUnit.SECONDS);
+                response.setMapList(maps);
                 return response;
             }catch (Exception e){
                 e.printStackTrace();
@@ -91,6 +97,7 @@ public class ClientService {
         }
         Message response = new Message();
         response.setMessageType(MessageType.ERROR);
+        response.setMapList(maps);
         return response;
     }
 
@@ -100,6 +107,7 @@ public class ClientService {
             request.setUser(user);
             request.setMessageType(MessageType.DISCONNECT);
             try {
+                maps=null;
                 channel.writeAndFlush(request).sync();
             }catch (Exception e){
                 e.printStackTrace();
@@ -112,14 +120,15 @@ public class ClientService {
         Message response = null;
         if(isActive()){
             Message request = new Message();
-            user.setScenes("map1");
+            user.setMapId(1);
             user.setPositionX(0);
             user.setPositionY(0);
             request.setUser(user);
             request.setMessageType(MessageType.REGISTER);
             try {
                 channel.writeAndFlush(request).sync();
-                response = queue.take();
+                response = queue.poll(3, TimeUnit.SECONDS);
+                maps=response.getMapList();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

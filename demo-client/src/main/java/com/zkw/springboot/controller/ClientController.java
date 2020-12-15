@@ -25,24 +25,31 @@ public class ClientController {
     }
 
     @PostMapping(value = "/register")
-    public String register(User user,Model model){
+    public String register(User user, Model model){
         Message message = service.register(user);
+        if(message.getMessageType()== MessageType.ERROR){
+            model.addAttribute("msg",message.getDescription());
+            return "index";
+        }
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
+        model.addAttribute("maps",message.getMapList());
         return "homepage";
     }
 
     @PostMapping(value = "/login")
-    public String login(@RequestParam(name="action")String action,User user,Model model){
+    public String login(@RequestParam(name="action")String action, User user, Model model){
         if(action.equals("register")){
             return "register";
         }
         Message message = service.login(user.getAccount(), user.getPassword());
-        model.addAttribute("user",message.getUser());
-        model.addAttribute("msg",message.getDescription());
         if(message.getMessageType()== MessageType.ERROR){
+            model.addAttribute("msg",message.getDescription());
             return "index";
         }
+        model.addAttribute("user",message.getUser());
+        model.addAttribute("msg",message.getDescription());
+        model.addAttribute("maps",message.getMapList());
         return "homepage";
     }
 
@@ -51,15 +58,17 @@ public class ClientController {
         Message message = service.move(direction,user);
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
+        model.addAttribute("maps",message.getMapList());
         return "homepage";
     }
 
     @PostMapping(value = "/operator",params="changeScenes")
-    public String changeScenes(User user,@RequestParam(name="changeScenes")String scenes,Model model){
-        user.setScenes(scenes);
+    public String changeScenes(User user,@RequestParam(name="changeScenes")Integer mapid,Model model){
+        user.setMapId(mapid);
         Message message = service.changeScenes(user);
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
+        model.addAttribute("maps",message.getMapList());
         return "homepage";
     }
 

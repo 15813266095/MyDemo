@@ -44,6 +44,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 //            log.info("服务器读空闲超过3次，关闭连接");
 //            Message message = new Message();
 //            message.setMessageType(MessageType.DISCONNECT);
+//            message.setDescription("服务器读空闲超过3次，关闭连接");
 //            ctx.channel().writeAndFlush(message);
 //            ctx.channel().close().sync();
 //        }
