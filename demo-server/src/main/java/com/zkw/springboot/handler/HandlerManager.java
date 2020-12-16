@@ -8,6 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 进行请求分发处理
+ */
 @Component
 public class HandlerManager {
 

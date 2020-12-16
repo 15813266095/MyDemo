@@ -1,6 +1,6 @@
 package com.zkw.springboot;
 
-import com.zkw.springboot.bean.Map;
+import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.dao.MapMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -17,10 +17,10 @@ class DemoServerApplicationTests {
 
     @Test
     void test() {
-        Map map = new Map();
-        map.setPositionX(0);
-        map.setPositionY(0);
-        mapMapper.insert(map);
+        MapInfo mapInfo = new MapInfo();
+        mapInfo.setPositionX(0);
+        mapInfo.setPositionY(0);
+        mapMapper.insert(mapInfo);
     }
 
 }

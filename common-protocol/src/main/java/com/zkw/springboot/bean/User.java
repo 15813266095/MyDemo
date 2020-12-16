@@ -2,6 +2,11 @@ package com.zkw.springboot.bean;
 
 import java.io.Serializable;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:39
+ * @desc 用户类，包括账号、密码、用户名、坐标XY、所在地图id
+ */
 public class User implements Serializable {
     private String account;
 
@@ -67,8 +72,8 @@ public class User implements Serializable {
         return "当前角色坐标为("+positionX+","+positionY+")";
     }
 
-    public boolean move(String direction,Map map){
-        int[][] path = map.getPathNums();
+    public boolean move(String direction, MapInfo mapInfo){
+        int[][] path = mapInfo.getPathNums();
         switch (direction){
             case "forward":
                 if(positionY+1>=path.length||path[positionY+1][positionX]==1){

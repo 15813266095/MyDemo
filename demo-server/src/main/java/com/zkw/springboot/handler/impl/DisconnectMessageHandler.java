@@ -3,19 +3,28 @@ package com.zkw.springboot.handler.impl;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 用于处理断开连接请求
+ */
 @Slf4j
-@Service
+@Component
 public class DisconnectMessageHandler implements IMessageHandler {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private DataManager dataManager;
 
     @Override
     public MessageType getMessageType() {
@@ -26,6 +35,8 @@ public class DisconnectMessageHandler implements IMessageHandler {
     public void operate(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
         userMapper.updateByPrimaryKeySelective(user);
+        dataManager.getMapInfoMap().get(user.getMapId()).removeUser(user);//将角色从地图里删除
+        dataManager.getConnectedUser().remove(user.getAccount());
         log.info("玩家数据保存成功");
         log.info("客户端断开连接");
         try {

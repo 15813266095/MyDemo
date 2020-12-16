@@ -9,8 +9,8 @@
         <span>账号：</span><input type="text" name="account">
         <span>密码：</span><input type="password" name="password">
         <button type="submit" th:text="登录" value="login" name="action"></button>
-        <button type="submit" th:text="注册" value="register" name="action"></button>
+        <button type="submit" th:text="注册" value="register" name="action"></button><br>
+        <label th:text="${msg}"></label>
     </form>
-
 </body>
 </html>

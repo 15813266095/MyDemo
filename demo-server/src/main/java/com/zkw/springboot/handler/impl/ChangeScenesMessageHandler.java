@@ -1,24 +1,25 @@
 package com.zkw.springboot.handler.impl;
 
-import com.zkw.springboot.bean.Map;
+import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.dao.MapMapper;
 import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
- * 场景切换时用的处理器，用于处理MessageType.CHANGE_SCENES请求
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 用于处理地图切换请求
  */
-
-@Service
+@Component
 public class ChangeScenesMessageHandler implements IMessageHandler {
 
     @Autowired
-    MapMapper mapMapper;
+    DataManager dataManager;
 
     @Override
     public MessageType getMessageType() {
@@ -28,12 +29,17 @@ public class ChangeScenesMessageHandler implements IMessageHandler {
     @Override
     public void operate(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
-        Integer mapId = user.getMapId();
-        Map map = mapMapper.selectByPrimaryKey(mapId);
-        user.setPositionX(map.getPositionX());
-        user.setPositionY(map.getPositionY());
+        Integer mapId = user.getMapId();//用户要去的地图id
+        Integer oldMapId = request.getOldMapId();//用户原本所在的地图id
+
+        MapInfo mapInfo = dataManager.getMapInfoMap().get(mapId);
+        mapInfo.addUser(user);//新地图增加用户
+        dataManager.getMapInfoMap().get(oldMapId).removeUser(user);//旧地图删除用户
+        user.setPositionX(mapInfo.getPositionX());
+        user.setPositionY(mapInfo.getPositionY());
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
+        response.setMapInfoMap(dataManager.getMapInfoMap());
         response.setDescription("当前角色地图为：地图"+mapId);
         response.setUser(user);
         ctx.writeAndFlush(response);

@@ -7,13 +7,14 @@ import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
- * 角色移动时执行的处理器，用来处理MessageType.MOVE请求
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 用于处理移动请求
  */
-
-@Service
+@Component
 public class MoveMessageHandler implements IMessageHandler {
 
     @Autowired
@@ -32,7 +33,7 @@ public class MoveMessageHandler implements IMessageHandler {
         if(f){
             response.setMessageType(MessageType.SUCCESS);
             response.setUser(user);
-            response.setDescription("\n角色移动了，方向为"+request.getDirection()+ "，当前角色位置为："+user.getArea());
+            response.setDescription("\n角色移动了，方向为 "+request.getDirection()+ " ，当前角色位置为："+user.getArea());
         }else{
             response.setMessageType(MessageType.ERROR);
             response.setUser(user);

@@ -1,23 +1,22 @@
 package com.zkw.springboot.dao;
 
-import com.zkw.springboot.bean.Map;
-import org.apache.ibatis.annotations.Select;
+
+import com.zkw.springboot.bean.MapInfo;
 
 import java.util.List;
 
 public interface MapMapper {
     int deleteByPrimaryKey(Integer id);
 
-    int insert(Map record);
+    int insert(MapInfo record);
 
-    int insertSelective(Map record);
+    int insertSelective(MapInfo record);
 
-    Map selectByPrimaryKey(Integer id);
+    MapInfo selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(Map record);
+    int updateByPrimaryKeySelective(MapInfo record);
 
-    int updateByPrimaryKey(Map record);
+    int updateByPrimaryKey(MapInfo record);
 
-    @Select("SELECT * FROM t_map")
-    public List<Map> findAll();
+    List<MapInfo> findAll();
 }

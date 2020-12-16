@@ -2,21 +2,31 @@ package com.zkw.springboot.netty;
 
 import com.zkw.springboot.handler.HandlerManager;
 import com.zkw.springboot.protocol.Message;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 接收客户端请求并分发
+ */
 @Slf4j
 public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
     private HandlerManager handlerManager;
-
     private int readIdleTimes = 0;//读空闲的计数
+    //private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public ServerHandler(HandlerManager handlerManager) {
         this.handlerManager = handlerManager;
+    }
+
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception{
+        Channel channel = ctx.channel();// 获取连接对象
     }
 
     @Override
@@ -49,4 +59,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 //            ctx.channel().close().sync();
 //        }
     }
+
+
 }

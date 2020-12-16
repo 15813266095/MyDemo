@@ -17,6 +17,11 @@ import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 服务器的启动和关闭
+ */
 @Slf4j
 @Component
 public class Server {

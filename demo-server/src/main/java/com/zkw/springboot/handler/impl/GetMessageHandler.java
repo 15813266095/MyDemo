@@ -7,13 +7,14 @@ import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
- * 获取角色信息时执行的处理器，用于处理MessageType.GET请求
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 处理用户的查看请求
  */
-
-@Service
+@Component
 public class GetMessageHandler implements IMessageHandler {
 
     @Autowired

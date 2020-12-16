@@ -26,6 +26,7 @@ public class DemoServerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //Scenes scenes = mapMapper.selectByPrimaryKey(1);
         ChannelFuture future = server.start("localhost",8881);
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override

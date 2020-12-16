@@ -4,13 +4,14 @@ import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
- * 请求错误时执行的处理器
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 用于处理错误请求
  */
-
-@Service
+@Component
 public class ErrorMessageHandler implements IMessageHandler {
     @Override
     public MessageType getMessageType() {

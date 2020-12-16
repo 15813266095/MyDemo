@@ -1,11 +1,17 @@
 package com.zkw.springboot.bean;
 
 import lombok.ToString;
-
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 地图类，包括地图id、出生地坐标XY、路径、地图里的用户信息
+ */
 @ToString
-public class Map implements Serializable {
+public class MapInfo implements Serializable {
     private Integer id;
 
     private Integer positionX;
@@ -13,6 +19,20 @@ public class Map implements Serializable {
     private Integer positionY;
 
     private int[][] path = new int[20][20];
+
+    private Map<String,User> users=new HashMap<>();
+
+    public void addUser(User user){
+        users.put(user.getAccount(),user);
+    }
+
+    public boolean removeUser(User user){
+        return users.remove(user.getAccount())!=null;
+    }
+
+    public int getUserCount(){
+        return users.size();
+    }
 
     public Integer getId() {
         return id;

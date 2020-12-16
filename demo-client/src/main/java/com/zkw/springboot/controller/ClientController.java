@@ -33,7 +33,7 @@ public class ClientController {
         }
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapList());
+        model.addAttribute("maps",message.getMapInfoMap());
         return "homepage";
     }
 
@@ -49,7 +49,7 @@ public class ClientController {
         }
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapList());
+        model.addAttribute("maps",message.getMapInfoMap());
         return "homepage";
     }
 
@@ -58,17 +58,16 @@ public class ClientController {
         Message message = service.move(direction,user);
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapList());
+        model.addAttribute("maps",message.getMapInfoMap());
         return "homepage";
     }
 
     @PostMapping(value = "/operator",params="changeScenes")
     public String changeScenes(User user,@RequestParam(name="changeScenes")Integer mapid,Model model){
-        user.setMapId(mapid);
-        Message message = service.changeScenes(user);
+        Message message = service.changeScenes(user,mapid);
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapList());
+        model.addAttribute("maps",message.getMapInfoMap());
         return "homepage";
     }
 

@@ -19,10 +19,11 @@
     <button type="submit" name="move" value="backward" th:text="后"></button>
     <button type="submit" name="move" value="left" th:text="左"></button>
     <button type="submit" name="move" value="right" th:text="右"></button><br>
-    <button th:each="map:${maps}" type="submit" name="changeScenes" th:value="${map.getId()}" th:text="'地图'+${map.getId()}"></button><br>
+    <button th:each="id,mapInfo:${maps}" type="submit" name="changeScenes" th:value="${id.getKey()}" th:text="'地图'+${id.getKey()}"></button><br>
     <button type="submit" name="disconnect" th:text="断开连接"></button><br><br>
 
-    <label th:text="${msg}"></label>
+    <label th:text="${msg}"></label><br>
+    <label th:text="'地图人数：'+${maps.get(user.getMapId()).getUserCount()}"></label>
 </form>
 </body>
 </html>

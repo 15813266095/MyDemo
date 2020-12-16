@@ -1,25 +1,31 @@
 package com.zkw.springboot.handler.impl;
 
-import com.zkw.springboot.bean.Map;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.MapMapper;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-@Service
+/**
+ * @author zhangkewei
+ * @date 2020/12/16 15:31
+ * @desc 用于处理注册请求
+ */
+@Component
 public class RegisterMessageHandler implements IMessageHandler {
     @Autowired
     UserMapper userMapper;
 
     @Autowired
     MapMapper mapMapper;
+
+    @Autowired
+    DataManager dataManager;
 
     @Override
     public MessageType getMessageType() {
@@ -36,8 +42,9 @@ public class RegisterMessageHandler implements IMessageHandler {
             ctx.writeAndFlush(response);
         }else{
             userMapper.insertSelective(request.getUser());
-            List<Map> maps = mapMapper.findAll();
-            response.setMapList(maps);
+            dataManager.getMapInfoMap().get(request.getUser().getMapId()).addUser(request.getUser());
+            dataManager.getConnectedUser().put(user.getAccount(),user);
+            response.setMapInfoMap(dataManager.getMapInfoMap());
             response.setMessageType(MessageType.SUCCESS);
             response.setUser(request.getUser());
             response.setDescription("注册成功！自动登录");
