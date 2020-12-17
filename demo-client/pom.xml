@@ -19,7 +19,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>com.zkw.springboot</groupId>
             <artifactId>common-protocol</artifactId>

@@ -43,7 +43,7 @@ public class Client {
                         }
                     });
             log.info("正在建立客户端连接");
-            channelFuture = bootstrap.connect(new InetSocketAddress("127.0.0.1", 8088)).sync();
+            channelFuture = bootstrap.connect().sync();
             channel=channelFuture.channel();
             log.info("建立连接成功");
         }catch (Exception e){

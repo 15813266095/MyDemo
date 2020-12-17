@@ -15,5 +15,5 @@ public interface IMessageHandler {
     /**
      *对消息进行操作
      */
-    void operate(ChannelHandlerContext ctx, Message request);
+    void operate(ChannelHandlerContext ctx, Message response);
 }

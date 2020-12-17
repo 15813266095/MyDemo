@@ -26,4 +26,28 @@
     <label th:text="'地图人数：'+${maps.get(user.getMapId()).getUserCount()}"></label>
 </form>
 </body>
+<script type="application/javascript">
+    while (!!window.EventSource) {
+        const eventSource = new EventSource("/sse");
+
+        eventSource.onmessage = function (e) {
+            const message = JSON.parse(e.data);
+            console.log(message);
+            //updating my HTML here
+
+        };
+
+        eventSource.onerror = function (e) {
+            if (e.readyState === EventSource.CONNECTING) {
+                console.log('event: CONNECTING');
+            } else if (e.readyState === EventSource.OPEN) {
+                console.log('event: OPEN');
+            } else if (e.readyState === EventSource.CLOSING) {
+                console.log('event: CLOSING');
+            } else if (e.readyState === EventSource.CLOSED) {
+                console.log('event: CLOSED');
+            }
+        };
+    }
+</script>
 </html>

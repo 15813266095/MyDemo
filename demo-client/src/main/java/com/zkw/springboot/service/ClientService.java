@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 public class ClientService {
     @Autowired
     private Client client;
+    @Autowired
+    SseService sseService;
     private Channel channel;
     private BlockingQueue<Message> queue = new LinkedBlockingQueue<>(1);
     private Map<Integer,MapInfo> mapInfoMap;
@@ -109,7 +111,6 @@ public class ClientService {
             request.setUser(user);
             request.setMessageType(MessageType.DISCONNECT);
             try {
-                mapInfoMap =null;
                 channel.writeAndFlush(request).sync();
             }catch (Exception e){
                 e.printStackTrace();
@@ -136,5 +137,24 @@ public class ClientService {
             }
         }
         return response;
+    }
+
+    /**
+     * 用于设置服务器发送来的最新地图信息，并更新到页面
+     * @param response
+     * @throws InterruptedException
+     */
+    public void setInfo(Message response) throws InterruptedException {
+        User user = response.getUser();
+        if(!mapInfoMap.get(user.getMapId()).getUsers().containsKey(user.getAccount())){
+            if(response.getOldMapId()!=null){
+                mapInfoMap.get(response.getOldMapId()).removeUser(user);
+            }
+            mapInfoMap.get(user.getMapId()).addUser(user);
+        }else {
+            mapInfoMap.get(user.getMapId()).removeUser(user);
+        }
+        //log.info(mapInfoMap.toString());
+        sseService.notifyListeners(mapInfoMap);
     }
 }

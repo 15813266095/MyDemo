@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangkewei
@@ -21,21 +19,27 @@ import java.util.stream.Collectors;
 public class DataManager {
     @Autowired
     private MapMapper mapMapper;
-    private Map<Integer, MapInfo> mapInfoMap;
-    private Map<String, User> connectedUser;
+    private static ConcurrentHashMap<Integer, MapInfo> mapInfoMap;
+    private static ConcurrentHashMap<String, User> connectedUser;
 
-    public Map<Integer, MapInfo> getMapInfoMap() {
+    public static ConcurrentHashMap<Integer, MapInfo> getMapInfoMap() {
         return mapInfoMap;
     }
 
-    public Map<String, User> getConnectedUser() {
+    public static ConcurrentHashMap<String, User> getConnectedUser() {
         return connectedUser;
     }
 
+    /**
+     * 在构造时创建好地图信息和玩家信息对象
+     */
     @PostConstruct
     public void init() {
+        this.mapInfoMap = new ConcurrentHashMap<>();
         List<MapInfo> mapInfos = mapMapper.findAll();
-        this.mapInfoMap = mapInfos.stream().collect(Collectors.toMap(mapInfo -> mapInfo.getId(), mapInfo -> mapInfo));
-        this.connectedUser = new HashMap<>();
+        for (MapInfo mapInfo : mapInfos) {
+            mapInfoMap.put(mapInfo.getId(),mapInfo);
+        }
+        this.connectedUser = new ConcurrentHashMap<>();
     }
 }

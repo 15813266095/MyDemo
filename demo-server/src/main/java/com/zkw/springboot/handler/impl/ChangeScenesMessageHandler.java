@@ -2,8 +2,9 @@ package com.zkw.springboot.handler.impl;
 
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.handler.DataManager;
+import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.netty.ServerHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -35,13 +36,28 @@ public class ChangeScenesMessageHandler implements IMessageHandler {
         MapInfo mapInfo = dataManager.getMapInfoMap().get(mapId);
         mapInfo.addUser(user);//新地图增加用户
         dataManager.getMapInfoMap().get(oldMapId).removeUser(user);//旧地图删除用户
+
         user.setPositionX(mapInfo.getPositionX());
         user.setPositionY(mapInfo.getPositionY());
+
+        Message messageToAll = new Message();
+        messageToAll.setMessageType(MessageType.REFRESH);
+        messageToAll.setOldMapId(oldMapId);
+        messageToAll.setUser(user);
+
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
         response.setMapInfoMap(dataManager.getMapInfoMap());
         response.setDescription("当前角色地图为：地图"+mapId);
         response.setUser(user);
         ctx.writeAndFlush(response);
+    }
+
+    public void sendMessageToAll(String account,Message message){
+        ServerHandler.concurrentMap.forEach((k, v) -> {
+            if(!account.equals(k)){
+                v.writeAndFlush(message);
+            }
+        });
     }
 }

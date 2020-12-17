@@ -24,6 +24,10 @@ public class MapInfo implements Serializable {
 
     private Map<String,User> users=new HashMap<>();
 
+    public Map<String, User> getUsers() {
+        return users;
+    }
+
     public void addUser(User user){
         users.put(user.getAccount(),user);
     }

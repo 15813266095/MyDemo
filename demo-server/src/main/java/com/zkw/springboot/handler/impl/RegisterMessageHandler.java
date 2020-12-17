@@ -3,8 +3,9 @@ package com.zkw.springboot.handler.impl;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.MapMapper;
 import com.zkw.springboot.dao.UserMapper;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.handler.DataManager;
+import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.netty.ServerHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -44,11 +45,27 @@ public class RegisterMessageHandler implements IMessageHandler {
             userMapper.insertSelective(request.getUser());
             dataManager.getMapInfoMap().get(request.getUser().getMapId()).addUser(request.getUser());
             dataManager.getConnectedUser().put(user.getAccount(),user);
+            ServerHandler.concurrentMap.put(user.getAccount(), ctx.channel());
+
+            Message messageToAll = new Message();
+            messageToAll.setMessageType(MessageType.REFRESH);
+            messageToAll.setUser(user);
+            messageToAll.setDescription(user.getUsername()+"上线了");
+            sendMessageToAll(user.getAccount(), messageToAll);
+
             response.setMapInfoMap(dataManager.getMapInfoMap());
             response.setMessageType(MessageType.SUCCESS);
             response.setUser(request.getUser());
             response.setDescription("注册成功！自动登录");
             ctx.writeAndFlush(response);
         }
+    }
+
+    public void sendMessageToAll(String account,Message message){
+        ServerHandler.concurrentMap.forEach((k, v) -> {
+            if(!account.equals(k)){
+                v.writeAndFlush(message);
+            }
+        });
     }
 }

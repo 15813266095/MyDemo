@@ -32,6 +32,12 @@ public class Server {
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private Channel channel;
 
+    /**
+     * 配置服务器信息，开启服务器
+     * @param hostname
+     * @param port
+     * @return
+     */
     public ChannelFuture start(String hostname,int port){
         ChannelFuture channelFuture=null;
         try {
@@ -59,6 +65,9 @@ public class Server {
         return channelFuture;
     }
 
+    /**
+     * 关闭服务器
+     */
     public void destroy(){
         if(channel != null) {
             channel.close();
