@@ -1,11 +1,9 @@
 package com.zkw.springboot.handler.impl;
 
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.dao.MapMapper;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.handler.IMessageHandler;
-import com.zkw.springboot.netty.ServerHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,9 +19,6 @@ import org.springframework.stereotype.Component;
 public class RegisterMessageHandler implements IMessageHandler {
     @Autowired
     UserMapper userMapper;
-
-    @Autowired
-    MapMapper mapMapper;
 
     @Autowired
     DataManager dataManager;
@@ -45,7 +40,7 @@ public class RegisterMessageHandler implements IMessageHandler {
             userMapper.insertSelective(request.getUser());
             dataManager.getMapInfoMap().get(request.getUser().getMapId()).addUser(request.getUser());
             dataManager.getConnectedUser().put(user.getAccount(),user);
-            ServerHandler.concurrentMap.put(user.getAccount(), ctx.channel());
+            dataManager.getConcurrentMap().put(user.getAccount(), ctx.channel());
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
@@ -62,7 +57,7 @@ public class RegisterMessageHandler implements IMessageHandler {
     }
 
     public void sendMessageToAll(String account,Message message){
-        ServerHandler.concurrentMap.forEach((k, v) -> {
+        dataManager.getConcurrentMap().forEach((k, v) -> {
             if(!account.equals(k)){
                 v.writeAndFlush(message);
             }

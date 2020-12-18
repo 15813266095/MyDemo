@@ -1,7 +1,7 @@
 package com.zkw.springboot.handler.impl;
 
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.dao.MapMapper;
+import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class MoveMessageHandler implements IMessageHandler {
 
     @Autowired
-    MapMapper mapMapper;
+    DataManager dataManager;
 
     @Override
     public MessageType getMessageType() {
@@ -29,7 +29,7 @@ public class MoveMessageHandler implements IMessageHandler {
     public void operate(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
         Message response = new Message();
-        boolean f = user.move(request.getDirection(), mapMapper.selectByPrimaryKey(user.getMapId()));
+        boolean f = user.move(request.getDirection(), dataManager.getMapInfoMap().get(user.getMapId()));
         if(f){
             response.setMessageType(MessageType.SUCCESS);
             response.setUser(user);

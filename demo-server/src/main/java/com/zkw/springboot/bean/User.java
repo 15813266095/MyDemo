@@ -73,7 +73,7 @@ public class User implements Serializable {
     }
 
     public boolean move(String direction, MapInfo mapInfo){
-        int[][] path = mapInfo.getPathNums();
+        int[][] path = mapInfo.getPath();
         switch (direction){
             case "forward":
                 if(positionY+1>=path.length||path[positionY+1][positionX]==1){

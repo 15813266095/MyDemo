@@ -21,7 +21,7 @@ public class SseService {
 
     @Autowired
     public SseService() {
-        emitter = new SseEmitter();
+        emitter = new SseEmitter(0l);
     }
 
     public SseEmitter getInfiniteMessages() {

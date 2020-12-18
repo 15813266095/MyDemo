@@ -4,7 +4,6 @@ import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.handler.IMessageHandler;
-import com.zkw.springboot.netty.ServerHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -42,7 +41,7 @@ public class LoginMessageHandler implements IMessageHandler {
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
             messageToAll.setUser(user1);
-            messageToAll.setDescription(user1.getUsername()+"上线了");
+            messageToAll.setDescription(user1.getUsername()+"下线了");
             sendMessageToAll(user.getAccount(), messageToAll);
 
             response.setMessageType(MessageType.ERROR);
@@ -50,7 +49,7 @@ public class LoginMessageHandler implements IMessageHandler {
         } else if(user1!=null&&user!=null&&user.getPassword().equals(user1.getPassword())){
             dataManager.getMapInfoMap().get(user1.getMapId()).addUser(user1);
             dataManager.getConnectedUser().put(user1.getAccount(),user1);
-            ServerHandler.concurrentMap.put(user.getAccount(), ctx.channel());
+            dataManager.getConcurrentMap().put(user.getAccount(), ctx.channel());
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
@@ -74,7 +73,7 @@ public class LoginMessageHandler implements IMessageHandler {
      * @param message
      */
     public void sendMessageToAll(String account,Message message){
-        ServerHandler.concurrentMap.forEach((k, v) -> {
+        dataManager.getConcurrentMap().forEach((k, v) -> {
             if(!account.equals(k)){
                 v.writeAndFlush(message);
             }

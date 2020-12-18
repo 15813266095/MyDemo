@@ -93,6 +93,10 @@ public class ClientService {
             try {
                 channel.writeAndFlush(request);
                 Message response = queue.poll(3, TimeUnit.SECONDS);
+                if(response.getMessageType()==MessageType.ERROR){
+                    response.setMapInfoMap(mapInfoMap);
+                    return response;
+                }
                 mapInfoMap=response.getMapInfoMap();
                 return response;
             }catch (Exception e){

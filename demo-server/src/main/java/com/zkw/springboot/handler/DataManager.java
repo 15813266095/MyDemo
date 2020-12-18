@@ -1,9 +1,10 @@
 package com.zkw.springboot.handler;
 
+import com.alibaba.excel.EasyExcel;
+import com.zkw.springboot.MapInfoListener;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.dao.MapMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.netty.channel.Channel;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -17,29 +18,50 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class DataManager {
-    @Autowired
-    private MapMapper mapMapper;
+
+    /**
+     * 地图信息
+     */
     private static ConcurrentHashMap<Integer, MapInfo> mapInfoMap;
+
+    /**
+     * 在线玩家信息
+     */
     private static ConcurrentHashMap<String, User> connectedUser;
 
-    public static ConcurrentHashMap<Integer, MapInfo> getMapInfoMap() {
+    /**
+     * 目前已经连接的channel信息，k=角色账号，v=channnel
+     */
+    private static ConcurrentHashMap<String, Channel> concurrentMap;
+
+
+
+    public ConcurrentHashMap<Integer, MapInfo> getMapInfoMap() {
         return mapInfoMap;
     }
 
-    public static ConcurrentHashMap<String, User> getConnectedUser() {
+    public ConcurrentHashMap<String, User> getConnectedUser() {
         return connectedUser;
     }
 
+    public ConcurrentHashMap<String, Channel> getConcurrentMap() {
+        return concurrentMap;
+    }
+
     /**
-     * 在构造时创建好地图信息和玩家信息对象
+     * 在构造时创建好信息对象
      */
     @PostConstruct
     public void init() {
-        this.mapInfoMap = new ConcurrentHashMap<>();
-        List<MapInfo> mapInfos = mapMapper.findAll();
+        this.connectedUser = new ConcurrentHashMap<>();
+        this.concurrentMap = new ConcurrentHashMap<>();
+        mapInfoMap = new ConcurrentHashMap<>();
+        String fileName = "demo-server/src/main/resources/maps/" + "地图信息.xlsx";
+        MapInfoListener mapInfoListener = new MapInfoListener();
+        EasyExcel.read(fileName, MapInfo.class, mapInfoListener).sheet().doRead();
+        List<MapInfo> mapInfos = mapInfoListener.getMaps();
         for (MapInfo mapInfo : mapInfos) {
             mapInfoMap.put(mapInfo.getId(),mapInfo);
         }
-        this.connectedUser = new ConcurrentHashMap<>();
     }
 }

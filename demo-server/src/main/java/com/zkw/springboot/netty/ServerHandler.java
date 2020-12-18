@@ -5,14 +5,11 @@ import com.zkw.springboot.handler.DataManager;
 import com.zkw.springboot.handler.HandlerManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangkewei
@@ -22,10 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
+    private DataManager dataManager;
     private HandlerManager handlerManager;
     private int readIdleTimes = 0;
-    public static ConcurrentHashMap<String,Channel> concurrentMap = new ConcurrentHashMap<>();
-    public ServerHandler(HandlerManager handlerManager) {
+
+    public ServerHandler(HandlerManager handlerManager,DataManager dataManager) {
+        this.dataManager = dataManager;
         this.handlerManager = handlerManager;
     }
 
@@ -76,18 +75,20 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
     public void safeDisconnect(ChannelHandlerContext ctx){
         String account=null;
-        for(String key: concurrentMap.keySet()){
-            if(concurrentMap.get(key).equals(ctx.channel())){
+        if(dataManager.getConcurrentMap().size()==0){
+            return;
+        }
+        for(String key: dataManager.getConcurrentMap().keySet()){
+            if(dataManager.getConcurrentMap().get(key).equals(ctx.channel())){
                 account=key;
             }
         }
         if(account!=null){
-            User user = DataManager.getConnectedUser().get(account);
-            System.out.println(account);
-            DataManager.getMapInfoMap().get(user.getMapId()).removeUser(user);
-            DataManager.getConnectedUser().remove(account);
+            User user = dataManager.getConnectedUser().get(account);
+            dataManager.getMapInfoMap().get(user.getMapId()).removeUser(user);
+            dataManager.getConnectedUser().remove(account);
         }
-        concurrentMap.remove(ctx.channel());
+        dataManager.getConcurrentMap().remove(ctx.channel());
     }
 
 

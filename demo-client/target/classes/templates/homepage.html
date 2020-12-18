@@ -21,35 +21,35 @@
     <button type="submit" name="move" value="right" th:text="右"></button><br>
     <button th:each="id,mapInfo:${maps}" type="submit" name="changeScenes" th:value="${id.getKey()}" th:text="'地图'+${id.getKey()}"></button><br>
     <button type="submit" name="disconnect" th:text="断开连接"></button><br><br>
-
     <label th:text="${msg}"></label><br>
-    <label th:text="'地图人数：'+${maps.get(user.getMapId()).getUserCount()}"></label>
+    <th:block th:each="id,mapInfo:${maps}">
+        <label th:id="${id.getKey()}" th:text="'地图'+${id.getKey()}+'人数：'+${maps.get(id.getKey()).getUserCount()}"></label><br>
+    </th:block>
 </form>
 </body>
+
 <script type="application/javascript">
-    while (!!window.EventSource) {
+    if (!!window.EventSource) {
         const eventSource = new EventSource("/sse");
-
-        eventSource.onmessage = function (e) {
+        eventSource.addEventListener("message", function(e) {
             const message = JSON.parse(e.data);
-            console.log(message);
-            //updating my HTML here
-
-        };
-
-        eventSource.onerror = function (e) {
-            if (e.readyState === EventSource.CONNECTING) {
-                console.log('event: CONNECTING');
-            } else if (e.readyState === EventSource.OPEN) {
-                console.log('event: OPEN');
-            } else if (e.readyState === EventSource.CLOSING) {
-                console.log('event: CLOSING');
-            } else if (e.readyState === EventSource.CLOSED) {
-                console.log('event: CLOSED');
+            for(const map in message){
+                let count=message[map].userCount;
+                document.getElementById(map).innerText = '地图'+map+'人数：'+count;
             }
+        });
+
+        eventSource.addEventListener('error', function(e) {
+            if (e.readyState === EventSource.CLOSED) {
+                console.log("连接关闭");
+            } else {
+                console.log(e);
+            }
+        }, false);
+
+        window.onbeforeunload = function() {
+            eventSource.close();
         };
-    } else {
-        alert('浏览器不支持sse');
     }
 </script>
 </html>
