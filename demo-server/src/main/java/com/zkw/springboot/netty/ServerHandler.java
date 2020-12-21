@@ -11,6 +11,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
+
 /**
  * @author zhangkewei
  * @date 2020/12/16 15:31
@@ -21,7 +22,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
     private DataManager dataManager;
     private HandlerManager handlerManager;
+
     private int readIdleTimes = 0;
+    int Max_readIdleTimes = 100;
 
     public ServerHandler(HandlerManager handlerManager,DataManager dataManager) {
         this.dataManager = dataManager;
@@ -43,14 +46,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      * @throws Exception
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Message request) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Message request){
         log.info("收到客户端消息，消息类型为"+request.getMessageType());
         handlerManager.getMessageTypeIMessageHandlerMap().get(request.getMessageType()).operate(ctx, request);
         readIdleTimes=0;//重置读空闲的计数
     }
 
     /**
-     * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过三次，关闭连接
+     * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过三次，发起关闭连接请求
      * @param ctx
      * @param evt
      * @throws Exception
@@ -60,23 +63,30 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
         IdleStateEvent event = (IdleStateEvent)evt;
         if(event.state() == IdleState.READER_IDLE){
             readIdleTimes ++; // 读空闲的计数加1
-            log.info(ctx.channel().remoteAddress() + "读空闲，累计次数"+readIdleTimes);
+            log.info(ctx.channel().remoteAddress() + "读空闲，累计次数" + readIdleTimes);
         }
-        if(readIdleTimes >= 50){
-            log.info("服务器读空闲超过3次，关闭连接");
+        if(readIdleTimes >= Max_readIdleTimes){
             Message message = new Message();
             message.setMessageType(MessageType.DISCONNECT);
-            message.setDescription("服务器读空闲超过10次，关闭连接");
-            ctx.channel().writeAndFlush(message);
-            safeDisconnect(ctx);
+            message.setDescription("服务器读空闲超过50次，关闭连接");
+            User user = safeDisconnect(ctx);
+            message.setUser(user);
+            log.info("服务器读空闲超过50次，关闭连接");
+            ctx.channel().writeAndFlush(message).sync();
             ctx.channel().close().sync();
         }
     }
 
-    public void safeDisconnect(ChannelHandlerContext ctx){
+    /**
+     * 安全地关闭连接，返回被断开连接的用户
+     * @param ctx
+     * @return
+     */
+    public User safeDisconnect(ChannelHandlerContext ctx){
+        User user = null;
         String account=null;
         if(dataManager.getConcurrentMap().size()==0){
-            return;
+            return user;
         }
         for(String key: dataManager.getConcurrentMap().keySet()){
             if(dataManager.getConcurrentMap().get(key).equals(ctx.channel())){
@@ -84,11 +94,12 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
             }
         }
         if(account!=null){
-            User user = dataManager.getConnectedUser().get(account);
+            user = dataManager.getConnectedUser().get(account);
             dataManager.getMapInfoMap().get(user.getMapId()).removeUser(user);
             dataManager.getConnectedUser().remove(account);
         }
         dataManager.getConcurrentMap().remove(ctx.channel());
+        return user;
     }
 
 

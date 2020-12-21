@@ -1,9 +1,9 @@
 package com.zkw.springboot;
 
-import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.netty.Server;
 import io.netty.channel.ChannelFuture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,9 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DemoServerApplication implements CommandLineRunner {
     @Autowired
-    Server server;
-    @Autowired
-    UserMapper userMapper;
+    private Server server;
+    @Value("${demoserver.hostname}")
+    private String hostname;
+    @Value("${demoserver.port}")
+    private int port;
 
     public static void main(String[] args) {
         SpringApplication.run(DemoServerApplication.class, args);
@@ -26,7 +28,7 @@ public class DemoServerApplication implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        ChannelFuture future = server.start("localhost",8881);
+        ChannelFuture future = server.start(hostname,port);
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
             public void run() {

@@ -9,6 +9,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -22,15 +23,22 @@ public class ClientService {
     private Client client;
     @Autowired
     SseService sseService;
+
+    @Value("${democlient.hostname}")
+    private String localhost;
+    @Value("${democlient.port}")
+    private int port;
+
     private Channel channel;
     private BlockingQueue<Message> queue = new LinkedBlockingQueue<>(1);
     private Map<Integer,MapInfo> mapInfoMap;
+
 
     public void put(Message message) throws InterruptedException {
         queue.put(message);
     }
 
-    public void start(String localhost, int port) {
+    public void start() {
         ChannelFuture channelFuture = client.start(localhost, port);
         this.channel=channelFuture.channel();
     }
@@ -160,5 +168,11 @@ public class ClientService {
         }
         //log.info(mapInfoMap.toString());
         sseService.notifyListeners(mapInfoMap);
+    }
+
+    public void disconnect(Message response){
+        User user = response.getUser();
+        mapInfoMap.get(user.getMapId()).removeUser(user);
+        sseService.disconnect(response.getDescription());
     }
 }

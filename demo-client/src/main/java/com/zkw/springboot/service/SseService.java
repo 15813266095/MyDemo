@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +35,17 @@ public class SseService {
             emitter.send(mapInfoMap);
         } catch (IOException e) {
             log.error("发送消息失败", e);
+        }
+    }
+
+    public void disconnect(String message){
+        try {
+            List<String> list = new ArrayList<>();
+            list.add("disconnect");
+            list.add(message);
+            emitter.send(list);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

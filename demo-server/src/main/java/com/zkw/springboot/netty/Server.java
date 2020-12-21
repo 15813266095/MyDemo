@@ -13,6 +13,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -30,10 +31,17 @@ public class Server {
     private HandlerManager handlerManager;
     @Autowired
     private DataManager dataManager;
+
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private Channel channel;
 
+    @Value("${demoserver.readerIdleTime}")
+    long readerIdleTime;
+    @Value("${demoserver.writerIdleTime}")
+    long writerIdleTime;
+    @Value("${demoserver.allIdleTime}")
+    long allIdleTime;
     /**
      * 配置服务器信息，开启服务器
      * @param hostname
@@ -54,7 +62,7 @@ public class Server {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new ObjectDecoder(1024*1024,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
-                            pipeline.addLast(new IdleStateHandler(5,2,2, TimeUnit.SECONDS));
+                            pipeline.addLast(new IdleStateHandler(readerIdleTime,writerIdleTime,allIdleTime,TimeUnit.SECONDS));
                             pipeline.addLast(new ServerHandler(handlerManager,dataManager));
                         }
                     });

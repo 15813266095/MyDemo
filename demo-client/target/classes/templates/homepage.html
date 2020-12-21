@@ -33,9 +33,14 @@
         const eventSource = new EventSource("/sse");
         eventSource.addEventListener("message", function(e) {
             const message = JSON.parse(e.data);
-            for(const map in message){
-                let count=message[map].userCount;
-                document.getElementById(map).innerText = '地图'+map+'人数：'+count;
+            if(message[0]=="disconnect"){
+                alert(message[1]);
+                window.location.href="/index"
+            }else {
+                for(const map in message){
+                    let count=message[map].userCount;
+                    document.getElementById(map).innerText = '地图'+map+'人数：'+count;
+                }
             }
         });
 

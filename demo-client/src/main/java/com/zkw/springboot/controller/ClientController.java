@@ -20,7 +20,7 @@ public class ClientController {
     @RequestMapping(value = {"/","/index"})
     public String hello(Model model){
         model.addAttribute("user",new User());
-        service.start("localhost", 8881);
+        service.start();
         return "index";
     }
 
