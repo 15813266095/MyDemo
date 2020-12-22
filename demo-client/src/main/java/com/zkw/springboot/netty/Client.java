@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.handler.HandlerManager;
+import com.zkw.springboot.handler.MessageHandlerManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -19,7 +19,7 @@ import java.net.InetSocketAddress;
 @Component
 public class Client {
     @Autowired
-    private HandlerManager handlerManager;
+    private MessageHandlerManager messageHandlerManager;
     private final NioEventLoopGroup group = new NioEventLoopGroup();
     private Channel channel = null;
 
@@ -28,7 +28,7 @@ public class Client {
         try {
             Bootstrap bootstrap = new Bootstrap();
             ClientHandler clientHandler = new ClientHandler();
-            clientHandler.setHandlerManager(handlerManager);
+            clientHandler.setHandlerManager(messageHandlerManager);
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
                     .remoteAddress(new InetSocketAddress(host, port))

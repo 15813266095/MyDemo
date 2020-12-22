@@ -1,9 +1,9 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.Channel;
@@ -13,24 +13,20 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author zhangkewei
- * @date 2020/12/16 15:31
+ * @date 2020/12/22 11:51
  * @desc 用于处理登录请求
  */
 @Component
-public class LoginMessageHandler implements IMessageHandler {
-
+public class LoginHandler {
     @Autowired
-    UserMapper userMapper;
+    private DataManager dataManager;
     @Autowired
-    DataManager dataManager;
+    private UserMapper userMapper;
+    @Autowired
+    private BroadcastHandler broadcastHandler;
 
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.LOGIN;
-    }
-
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message request) {
+    @handler(messageType = MessageType.LOGIN)
+    public void loginHandler(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
         User user1 = userMapper.selectByPrimaryKey(user.getAccount());
         Message response = new Message();
@@ -59,11 +55,12 @@ public class LoginMessageHandler implements IMessageHandler {
             messageToAll.setMessageType(MessageType.REFRESH);
             messageToAll.setUser(user1);
             messageToAll.setDescription(user1.getUsername()+"下线了");
-            sendMessageToAll(user.getAccount(), messageToAll);
+            broadcastHandler.sendMessageToAll(user.getAccount(), messageToAll);
 
             response.setMessageType(MessageType.ERROR);
             response.setDescription("该账号已经在线，请重新登录");
         }
+
         /**
          * 用户登录的处理
          */
@@ -76,13 +73,14 @@ public class LoginMessageHandler implements IMessageHandler {
             messageToAll.setMessageType(MessageType.REFRESH);
             messageToAll.setUser(user1);
             messageToAll.setDescription(user1.getUsername()+"上线了");
-            sendMessageToAll(user.getAccount(), messageToAll);
+            broadcastHandler.sendMessageToAll(user.getAccount(), messageToAll);
 
             response.setMapInfoMap(dataManager.getMapInfoMap());
             response.setUser(user1);
             response.setMessageType(MessageType.SUCCESS);
             response.setDescription("登录成功!");
         }
+
         /**
          * 登录出错
          */
@@ -93,15 +91,5 @@ public class LoginMessageHandler implements IMessageHandler {
         ctx.writeAndFlush(response);
     }
 
-    /**
-     * 将消息发送给所有连接的角色
-     * @param message
-     */
-    public void sendMessageToAll(String account,Message message){
-        dataManager.getConcurrentMap().forEach((k, v) -> {
-            if(!account.equals(k)){
-                v.writeAndFlush(message);
-            }
-        });
-    }
+
 }

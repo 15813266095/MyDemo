@@ -1,9 +1,9 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,22 +12,18 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author zhangkewei
- * @date 2020/12/16 15:31
- * @desc 用于处理地图切换请求
+ * @date 2020/12/22 11:54
+ * @desc 用于处理切换地图请求
  */
 @Component
-public class ChangeScenesMessageHandler implements IMessageHandler {
-
+public class ChangeMapHandler {
     @Autowired
     DataManager dataManager;
+    @Autowired
+    BroadcastHandler broadcastHandler;
 
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.CHANGE_SCENES;
-    }
-
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message request) {
+    @handler(messageType = MessageType.CHANGE_SCENES)
+    public void changeMapHandler(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
         Integer mapId = user.getMapId();//用户要去的地图id
         Integer oldMapId = request.getOldMapId();//用户原本所在的地图id
@@ -53,7 +49,7 @@ public class ChangeScenesMessageHandler implements IMessageHandler {
         messageToAll.setOldMapId(oldMapId);
         messageToAll.setUser(user);
         messageToAll.setDescription(user.getUsername()+"去地图"+user.getMapId()+"了");
-        sendMessageToAll(user.getAccount(),messageToAll);
+        broadcastHandler.sendMessageToAll(user.getAccount(),messageToAll);
 
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
@@ -63,11 +59,4 @@ public class ChangeScenesMessageHandler implements IMessageHandler {
         ctx.writeAndFlush(response);
     }
 
-    public void sendMessageToAll(String account,Message message){
-        dataManager.getConcurrentMap().forEach((k, v) -> {
-            if(!account.equals(k)){
-                v.writeAndFlush(message);
-            }
-        });
-    }
 }

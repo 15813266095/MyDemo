@@ -1,6 +1,6 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
-import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,18 +8,14 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author zhangkewei
- * @date 2020/12/16 15:31
+ * @date 2020/12/22 11:55
  * @desc 用于处理错误请求
  */
 @Component
-public class ErrorMessageHandler implements IMessageHandler {
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.ERROR;
-    }
+public class ErrorHandler {
 
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message request) {
+    @handler(messageType = MessageType.ERROR)
+    public void errorHandler(ChannelHandlerContext ctx, Message request) {
         Message response = new Message();
         response.setMessageType(MessageType.ERROR);
         response.setDescription("请求方式错误");

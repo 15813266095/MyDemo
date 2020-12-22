@@ -1,8 +1,8 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.UserMapper;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,22 +11,17 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author zhangkewei
- * @date 2020/12/16 15:31
- * @desc 处理用户的查看请求
+ * @date 2020/12/22 11:55
+ * @desc 用于处理获取用户信息请求
  */
 @Component
-public class GetMessageHandler implements IMessageHandler {
+public class GetHandler {
 
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.GET;
-    }
-
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message request) {
+    @handler(messageType = MessageType.GET)
+    public void getHandler(ChannelHandlerContext ctx, Message request) {
         User user = userMapper.selectByPrimaryKey(request.getUser().getAccount());
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);

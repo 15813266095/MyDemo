@@ -1,7 +1,7 @@
 package com.zkw.springboot.netty;
 
 
-import com.zkw.springboot.handler.HandlerManager;
+import com.zkw.springboot.handler.MessageHandlerManager;
 import com.zkw.springboot.protocol.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClientHandler extends SimpleChannelInboundHandler<Message> {
 
-    private HandlerManager handlerManager;
+    private MessageHandlerManager messageHandlerManager;
 
-    public void setHandlerManager(HandlerManager handlerManager) {
-        this.handlerManager = handlerManager;
+    public void setHandlerManager(MessageHandlerManager messageHandlerManager) {
+        this.messageHandlerManager = messageHandlerManager;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Message> {
             channelHandlerContext.channel().close().sync();
             return;
         }
-        handlerManager.getMessageTypeIMessageHandlerMap().get(response.getMessageType()).operate(channelHandlerContext, response);
+        messageHandlerManager.invokeMethod(response.getMessageType(),channelHandlerContext,response);
     }
 
 }

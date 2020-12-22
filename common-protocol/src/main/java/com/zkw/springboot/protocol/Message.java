@@ -3,6 +3,7 @@ package com.zkw.springboot.protocol;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
 import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Map;
 

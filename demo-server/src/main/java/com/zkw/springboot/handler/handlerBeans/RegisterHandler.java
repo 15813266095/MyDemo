@@ -1,9 +1,9 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,30 +12,26 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author zhangkewei
- * @date 2020/12/16 15:31
+ * @date 2020/12/22 11:54
  * @desc 用于处理注册请求
  */
 @Component
-public class RegisterMessageHandler implements IMessageHandler {
-    @Autowired
-    UserMapper userMapper;
+public class RegisterHandler {
 
     @Autowired
-    DataManager dataManager;
+    private DataManager dataManager;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private BroadcastHandler broadcastHandler;
 
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.REGISTER;
-    }
-
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message request) {
+    @handler(messageType = MessageType.REGISTER)
+    public void registerHandler(ChannelHandlerContext ctx, Message request) {
         User user = userMapper.selectByPrimaryKey(request.getUser().getAccount());
         Message response = new Message();
         if(user!=null){
             response.setMessageType(MessageType.ERROR);
             response.setDescription("账号重复");
-            ctx.writeAndFlush(response);
         }else{
             userMapper.insertSelective(request.getUser());
             dataManager.getMapInfoMap().get(request.getUser().getMapId()).addUser(request.getUser());
@@ -46,21 +42,14 @@ public class RegisterMessageHandler implements IMessageHandler {
             messageToAll.setMessageType(MessageType.REFRESH);
             messageToAll.setUser(user);
             messageToAll.setDescription(user.getUsername()+"上线了");
-            sendMessageToAll(user.getAccount(), messageToAll);
+            broadcastHandler.sendMessageToAll(user.getAccount(), messageToAll);
 
             response.setMapInfoMap(dataManager.getMapInfoMap());
             response.setMessageType(MessageType.SUCCESS);
             response.setUser(request.getUser());
             response.setDescription("注册成功！自动登录");
-            ctx.writeAndFlush(response);
         }
+        ctx.writeAndFlush(response);
     }
 
-    public void sendMessageToAll(String account,Message message){
-        dataManager.getConcurrentMap().forEach((k, v) -> {
-            if(!account.equals(k)){
-                v.writeAndFlush(message);
-            }
-        });
-    }
 }

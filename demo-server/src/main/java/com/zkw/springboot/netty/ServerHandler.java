@@ -1,15 +1,15 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.bean.User;
 import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.HandlerManager;
+import com.zkw.springboot.handler.MessageHandlerManager;
 import com.zkw.springboot.protocol.Message;
-import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -21,22 +21,22 @@ import lombok.extern.slf4j.Slf4j;
 public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
     private DataManager dataManager;
-    private HandlerManager handlerManager;
+    private MessageHandlerManager messageHandlerManager;
 
     private int readIdleTimes = 0;
-    int Max_readIdleTimes = 100;
+    private static final int Max_readIdleTimes = 50;
 
-    public ServerHandler(HandlerManager handlerManager,DataManager dataManager) {
+    public ServerHandler(DataManager dataManager, MessageHandlerManager messageHandlerManager) {
         this.dataManager = dataManager;
-        this.handlerManager = handlerManager;
+        this.messageHandlerManager = messageHandlerManager;
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws InterruptedException {
-        //cause.printStackTrace();
-        safeDisconnect(ctx);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
+        cause.printStackTrace();
+        messageHandlerManager.safeDisconnect(ctx);
         log.error("客户端关闭，断开连接");
-        ctx.channel().close().sync();
+        ctx.channel().close();
     }
 
     /**
@@ -46,14 +46,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      * @throws Exception
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Message request){
+    protected void channelRead0(ChannelHandlerContext ctx, Message request) throws InvocationTargetException, IllegalAccessException {
         log.info("收到客户端消息，消息类型为"+request.getMessageType());
-        handlerManager.getMessageTypeIMessageHandlerMap().get(request.getMessageType()).operate(ctx, request);
+        messageHandlerManager.invokeMethod(request.getMessageType(),ctx,request);
         readIdleTimes=0;//重置读空闲的计数
     }
 
     /**
-     * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过三次，发起关闭连接请求
+     * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过五十次，发起关闭连接请求
      * @param ctx
      * @param evt
      * @throws Exception
@@ -62,45 +62,13 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         IdleStateEvent event = (IdleStateEvent)evt;
         if(event.state() == IdleState.READER_IDLE){
-            readIdleTimes ++; // 读空闲的计数加1
+            readIdleTimes++; // 读空闲的计数加1
             log.info(ctx.channel().remoteAddress() + "读空闲，累计次数" + readIdleTimes);
         }
         if(readIdleTimes >= Max_readIdleTimes){
-            Message message = new Message();
-            message.setMessageType(MessageType.DISCONNECT);
-            message.setDescription("服务器读空闲超过50次，关闭连接");
-            User user = safeDisconnect(ctx);
-            message.setUser(user);
-            log.info("服务器读空闲超过50次，关闭连接");
-            ctx.channel().writeAndFlush(message).sync();
-            ctx.channel().close().sync();
+            messageHandlerManager.HeartbeatDisconnect(ctx);
+            readIdleTimes=0;
         }
     }
-
-    /**
-     * 安全地关闭连接，返回被断开连接的用户
-     * @param ctx
-     * @return
-     */
-    public User safeDisconnect(ChannelHandlerContext ctx){
-        User user = null;
-        String account=null;
-        if(dataManager.getConcurrentMap().size()==0){
-            return user;
-        }
-        for(String key: dataManager.getConcurrentMap().keySet()){
-            if(dataManager.getConcurrentMap().get(key).equals(ctx.channel())){
-                account=key;
-            }
-        }
-        if(account!=null){
-            user = dataManager.getConnectedUser().get(account);
-            dataManager.getMapInfoMap().get(user.getMapId()).removeUser(user);
-            dataManager.getConnectedUser().remove(account);
-        }
-        dataManager.getConcurrentMap().remove(ctx.channel());
-        return user;
-    }
-
 
 }

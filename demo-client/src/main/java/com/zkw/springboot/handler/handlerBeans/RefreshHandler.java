@@ -1,6 +1,6 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
-import com.zkw.springboot.handler.IMessageHandler;
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import com.zkw.springboot.service.ClientService;
@@ -9,24 +9,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/17 12:19
+ * @desc 用于接收服务器主动传来的消息并实时刷新到页面
+ */
 @Slf4j
 @Component
-public class DisconnectHandler implements IMessageHandler {
+public class RefreshHandler {
 
     @Autowired
     ClientService clientService;
 
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.DISCONNECT;
-    }
-
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message response) {
-        clientService.disconnect(response);
+    @handler(messageType = MessageType.REFRESH)
+    public void refreshHandler(ChannelHandlerContext ctx, Message response) {
+        log.info(response.getDescription());
         try {
-            ctx.channel().close().sync();
-            log.info("断开连接");
+            clientService.setInfo(response);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -39,6 +39,10 @@ public class MapInfo implements Serializable {
         users.put(user.getAccount(),user);
     }
 
+    public boolean containUser(User user){
+        return users.containsKey(user.getAccount());
+    }
+
     public boolean removeUser(User user){
         return users.remove(user.getAccount())!=null;
     }

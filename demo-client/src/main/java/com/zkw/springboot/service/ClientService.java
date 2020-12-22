@@ -16,6 +16,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 用于发送请求和接收请求的Service
+ */
+
 @Service
 @Slf4j
 public class ClientService {
@@ -124,6 +128,7 @@ public class ClientService {
             request.setMessageType(MessageType.DISCONNECT);
             try {
                 channel.writeAndFlush(request).sync();
+                channel.close();
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -171,8 +176,7 @@ public class ClientService {
     }
 
     public void disconnect(Message response){
-        User user = response.getUser();
-        mapInfoMap.get(user.getMapId()).removeUser(user);
+        mapInfoMap=response.getMapInfoMap();
         sseService.disconnect(response.getDescription());
     }
 }

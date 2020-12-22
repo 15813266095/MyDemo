@@ -35,15 +35,26 @@ public class DataManager {
     private static ConcurrentHashMap<String, Channel> concurrentMap;
 
 
-
+    /**
+     * 缓存地图信息
+     * @return
+     */
     public ConcurrentHashMap<Integer, MapInfo> getMapInfoMap() {
         return mapInfoMap;
     }
 
+    /**
+     * 缓存在线角色信息
+     * @return
+     */
     public ConcurrentHashMap<String, User> getConnectedUser() {
         return connectedUser;
     }
 
+    /**
+     * 缓存角色对应的channel信息
+     * @return
+     */
     public ConcurrentHashMap<String, Channel> getConcurrentMap() {
         return concurrentMap;
     }

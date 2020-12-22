@@ -1,8 +1,8 @@
-package com.zkw.springboot.handler.impl;
+package com.zkw.springboot.handler.handlerBeans;
 
+import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.IMessageHandler;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,22 +11,17 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author zhangkewei
- * @date 2020/12/16 15:31
+ * @date 2020/12/22 11:54
  * @desc 用于处理移动请求
  */
 @Component
-public class MoveMessageHandler implements IMessageHandler {
+public class MoveHandler {
 
     @Autowired
-    DataManager dataManager;
+    private DataManager dataManager;
 
-    @Override
-    public MessageType getMessageType() {
-        return MessageType.MOVE;
-    }
-
-    @Override
-    public void operate(ChannelHandlerContext ctx, Message request) {
+    @handler(messageType = MessageType.MOVE)
+    public void moveHandler(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
         Message response = new Message();
         boolean f = user.move(request.getDirection(), dataManager.getMapInfoMap().get(user.getMapId()));
