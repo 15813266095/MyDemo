@@ -64,7 +64,7 @@ public class ClientController {
 
     @PostMapping(value = "/operator",params="changeScenes")
     public String changeScenes(User user,@RequestParam(name="changeScenes")Integer mapid,Model model){
-        Message message = service.changeScenes(user,mapid);
+        Message message = service.changeMap(user,mapid);
         model.addAttribute("user",message.getUser());
         model.addAttribute("msg",message.getDescription());
         model.addAttribute("maps",message.getMapInfoMap());

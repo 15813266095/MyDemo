@@ -1,4 +1,4 @@
-package com.zkw.springboot.handler;
+package com.zkw.springboot.distribution;
 
 import com.zkw.springboot.protocol.MessageType;
 import lombok.Data;

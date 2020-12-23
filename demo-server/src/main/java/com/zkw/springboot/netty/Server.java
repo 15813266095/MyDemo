@@ -1,7 +1,7 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageHandlerManager;
+import com.zkw.springboot.service.HeartbeatService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class Server {
     @Autowired
-    private DataManager dataManager;
+    private HeartbeatService heartbeatService;
     @Autowired
     private MessageHandlerManager messageHandlerManager;
 
@@ -58,12 +58,12 @@ public class Server {
                     .localAddress(new InetSocketAddress(hostname, port))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        protected void initChannel(SocketChannel socketChannel){
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new ObjectDecoder(1024*1024,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
                             pipeline.addLast(new IdleStateHandler(readerIdleTime,writerIdleTime,allIdleTime,TimeUnit.SECONDS));
-                            pipeline.addLast(new ServerHandler(dataManager, messageHandlerManager));
+                            pipeline.addLast(new ServerHandler(heartbeatService, messageHandlerManager));
                         }
                     });
             channelFuture = serverBootstrap.bind().sync();

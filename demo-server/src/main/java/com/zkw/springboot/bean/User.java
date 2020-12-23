@@ -8,16 +8,34 @@ import java.io.Serializable;
  * @desc 用户类，包括账号、密码、用户名、坐标XY、所在地图id
  */
 public class User implements Serializable {
+    /**
+     * 用户账号
+     */
     private String account;
 
+    /**
+     * 用户密码
+     */
     private String password;
 
+    /**
+     * 用户名
+     */
     private String username;
 
+    /**
+     * 用户所在X坐标
+     */
     private Integer positionX;
 
+    /**
+     * 用户所在Y坐标
+     */
     private Integer positionY;
 
+    /**
+     * 用户所在地图ID
+     */
     private Integer mapId;
 
     public String getAccount() {
@@ -72,33 +90,4 @@ public class User implements Serializable {
         return "当前角色坐标为("+positionX+","+positionY+")";
     }
 
-    public boolean move(String direction, MapInfo mapInfo){
-        int[][] path = mapInfo.getPath();
-        switch (direction){
-            case "forward":
-                if(positionY+1>=path.length||path[positionY+1][positionX]==1){
-                    return false;
-                }
-                positionY++;
-                break;
-            case "backward":
-                if(positionY-1<0||path[positionY-1][positionX]==1){
-                    return false;
-                }
-                positionY--;
-                break;
-            case "right":
-                if(positionX+1>=path[0].length||path[positionY][positionX+1]==1){
-                    return false;
-                }
-                positionX++;
-                break;
-            case "left":
-                if(positionX-1<0||path[positionY][positionX-1]==1){
-                    return false;
-                }
-                positionX--;
-        }
-        return true;
-    }
 }

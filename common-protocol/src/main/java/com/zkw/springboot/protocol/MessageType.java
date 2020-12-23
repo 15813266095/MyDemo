@@ -17,7 +17,7 @@ public enum MessageType implements Serializable {
     //角色移动请求
     MOVE,
     //场景切换请求
-    CHANGE_SCENES,
+    CHANGEMAP,
     //断开连接请求
     DISCONNECT,
     //操作成功

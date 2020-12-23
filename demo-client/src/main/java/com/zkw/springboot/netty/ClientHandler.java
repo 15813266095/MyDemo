@@ -1,7 +1,7 @@
 package com.zkw.springboot.netty;
 
 
-import com.zkw.springboot.handler.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageHandlerManager;
 import com.zkw.springboot.protocol.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

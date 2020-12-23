@@ -1,6 +1,6 @@
-package com.zkw.springboot.handler;
+package com.zkw.springboot.distribution;
 
-import com.zkw.springboot.annotation.handler;
+import com.zkw.springboot.annotation.HandlerAnno;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
 
 /**
  * @author zhangkewei
- * @date 2020/12/22 16:40
- * @desc 回调类，在启动时将对应的处理器加载到map中
+ * @date 2020/12/22 12:05
+ * @desc 回调类，负责扫描容器中的类，将有注解的类的方法按照类型存入MethodMap中，同时把对应的对象存入BeanMap中，便于invoke
  */
 @Component
 public class HandlerBeanPostProcessor implements BeanPostProcessor {
@@ -22,9 +22,9 @@ public class HandlerBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Method[] methods = bean.getClass().getMethods();
         for (Method method : methods) {
-            if(method.isAnnotationPresent(handler.class)){
-                messageHandlerManager.getMethodMap().put(method.getAnnotation(handler.class).messageType(),method);
-                messageHandlerManager.getBeanMap().put(method.getAnnotation(handler.class).messageType(),bean);
+            if(method.isAnnotationPresent(HandlerAnno.class)){
+                messageHandlerManager.getMethodMap().put(method.getAnnotation(HandlerAnno.class).messageType(),method);
+                messageHandlerManager.getBeanMap().put(method.getAnnotation(HandlerAnno.class).messageType(),bean);
             }
         }
         return bean;

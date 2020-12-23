@@ -29,12 +29,7 @@ public class DemoServerApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         ChannelFuture future = server.start(hostname,port);
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                server.destroy();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> server.destroy()));
         future.channel().closeFuture().sync();
     }
 

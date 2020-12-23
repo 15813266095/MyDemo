@@ -18,37 +18,60 @@ import java.util.Map;
 @Slf4j
 @Data
 public class MapInfo implements Serializable {
+    /**
+     * 地图id
+     */
     @ExcelProperty("地图ID")
     private Integer id;
+
+    /**
+     * 地图出生点的X坐标
+     */
     @ExcelProperty("出生点坐标X")
     private Integer positionX;
+
+    /**
+     * 地图出生点的Y坐标
+     */
     @ExcelProperty("出生点坐标Y")
     private Integer positionY;
+
+    /**
+     * 地图元素，1为障碍物
+     */
     @ExcelIgnore
-    private int[][] path;
+    private int[][] paths;
+
+    /**
+     * 地图中的玩家
+     */
     @ExcelIgnore
-    private Map<String,User> users=new HashMap<>();
+    private Map<String,User> usermap=new HashMap<>();
+
+    /**
+     * 地图元素的JSON格式
+     */
     @ExcelProperty("地图元素")
     private String jsonPath;
 
     public Map<String, User> getUsers() {
-        return users;
+        return usermap;
     }
 
-    public void addUser(User user){
-        users.put(user.getAccount(),user);
+    public void enterUser(User user){
+        usermap.put(user.getAccount(),user);
     }
 
     public boolean containUser(User user){
-        return users.containsKey(user.getAccount());
+        return usermap.containsKey(user.getAccount());
     }
 
-    public boolean removeUser(User user){
-        return users.remove(user.getAccount())!=null;
+    public boolean exitUser(User user){
+        return usermap.remove(user.getAccount())!=null;
     }
 
     public int getUserCount(){
-        return users.size();
+        return usermap.size();
     }
 
     public int[][] getPath() {

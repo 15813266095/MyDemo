@@ -1,8 +1,7 @@
-package com.zkw.springboot.handler;
+package com.zkw.springboot.distribution;
 
-import com.zkw.springboot.handler.handlerBeans.HeartbeatHandler;
 import com.zkw.springboot.protocol.MessageType;
-import io.netty.channel.ChannelHandlerContext;
+import com.zkw.springboot.service.HeartbeatService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,14 @@ import java.util.Map;
 /**
  * @author zhangkewei
  * @date 2020/12/22 11:09
- * @desc 请求消息管理器
+ * @desc 分发管理器，负责将收到的请求按照类型分发到不同的facade类中的方法里
  */
 @Slf4j
 @Component
 @Data
 public class MessageHandlerManager {
     @Autowired
-    private HeartbeatHandler heartbeatHandler;
+    private HeartbeatService heartbeatService;
     private Map<MessageType, Method> methodMap = new HashMap<>();
     private Map<MessageType, Object> beanMap = new HashMap<>();
 
@@ -36,13 +35,5 @@ public class MessageHandlerManager {
             return;
         }
         method.invoke(beanMap.get(messageType),args);
-    }
-
-    public void HeartbeatDisconnect(ChannelHandlerContext ctx) throws InterruptedException {
-        heartbeatHandler.disconnect(ctx);
-    }
-
-    public void safeDisconnect(ChannelHandlerContext ctx){
-        heartbeatHandler.safeDisconnect(ctx);
     }
 }

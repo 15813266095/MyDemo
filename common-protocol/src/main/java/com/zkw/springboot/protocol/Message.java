@@ -15,11 +15,33 @@ import java.util.Map;
 @Data
 public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 消息类型
+     */
     private MessageType messageType;
+
+    /**
+     * 消息携带的用户
+     */
     private User user;
+
+    /**
+     * 消息携带的地图信息
+     */
     private Map<Integer,MapInfo> mapInfoMap;
+
+    /**
+     * 角色移动时，移动消息携带的移动方向
+     */
     private String direction;
+
+    /**
+     * 消息内容的描述
+     */
     private String description;
+
+    /**
+     * 切换地图时，消息携带的旧地图id
+     */
     private Integer oldMapId;
 }

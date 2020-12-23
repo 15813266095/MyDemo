@@ -1,34 +1,39 @@
-package com.zkw.springboot.handler.handlerBeans;
+package com.zkw.springboot.service.impl;
 
-import com.zkw.springboot.annotation.handler;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.handler.DataManager;
+import com.zkw.springboot.cache.MapInfoCache;
+import com.zkw.springboot.cache.UserCache;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
+import com.zkw.springboot.service.BroadcastService;
+import com.zkw.springboot.service.MapInfoService;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * @author zhangkewei
- * @date 2020/12/22 11:54
- * @desc 用于处理切换地图请求
+ * @date 2020/12/23 11:41
+ * @desc 地图服务
  */
-@Component
-public class ChangeMapHandler {
-    @Autowired
-    DataManager dataManager;
-    @Autowired
-    BroadcastHandler broadcastHandler;
+@Service
+public class MapInfoServiceImpl implements MapInfoService {
 
-    @handler(messageType = MessageType.CHANGE_SCENES)
-    public void changeMapHandler(ChannelHandlerContext ctx, Message request) {
+    @Autowired
+    private UserCache userCache;
+    @Autowired
+    private MapInfoCache mapInfoCache;
+    @Autowired
+    private BroadcastService broadcastService;
+
+    @Override
+    public void changeMap(ChannelHandlerContext ctx, Message request) {
         User user = request.getUser();
         Integer mapId = user.getMapId();//用户要去的地图id
         Integer oldMapId = request.getOldMapId();//用户原本所在的地图id
 
-        if (mapId.equals(oldMapId)) {
+        if (mapId==oldMapId) {
             Message response = new Message();
             response.setUser(user);
             response.setMessageType(MessageType.ERROR);
@@ -37,26 +42,25 @@ public class ChangeMapHandler {
             return;
         }
 
-        MapInfo mapInfo = dataManager.getMapInfoMap().get(mapId);
-        mapInfo.addUser(user);//新地图增加用户
-        dataManager.getMapInfoMap().get(oldMapId).removeUser(user);//旧地图删除用户
+        MapInfo mapInfo = mapInfoCache.getMapInfoMap().get(mapId);
+        mapInfo.enterUser(user);//新地图增加用户
+        mapInfoCache.getMapInfoMap().get(oldMapId).exitUser(user);//旧地图删除用户
 
         user.setPositionX(mapInfo.getPositionX());
         user.setPositionY(mapInfo.getPositionY());
 
         Message messageToAll = new Message();
-        messageToAll.setMessageType(MessageType.REFRESH);
+        messageToAll.setMessageType(MessageType.CHANGEMAP);
         messageToAll.setOldMapId(oldMapId);
         messageToAll.setUser(user);
         messageToAll.setDescription(user.getUsername()+"去地图"+user.getMapId()+"了");
-        broadcastHandler.sendMessageToAll(user.getAccount(),messageToAll);
+        broadcastService.sendMessageToAll(user.getAccount(),messageToAll);
 
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
-        response.setMapInfoMap(dataManager.getMapInfoMap());
+        response.setMapInfoMap(mapInfoCache.getMapInfoMap());
         response.setDescription("当前角色地图为：地图"+mapId);
         response.setUser(user);
         ctx.writeAndFlush(response);
     }
-
 }

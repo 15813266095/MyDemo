@@ -1,8 +1,8 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.handler.DataManager;
-import com.zkw.springboot.handler.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageHandlerManager;
 import com.zkw.springboot.protocol.Message;
+import com.zkw.springboot.service.HeartbeatService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -20,27 +20,27 @@ import java.lang.reflect.InvocationTargetException;
 @Slf4j
 public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
-    private DataManager dataManager;
+    private HeartbeatService heartbeatService;
     private MessageHandlerManager messageHandlerManager;
 
     private int readIdleTimes = 0;
     private static final int Max_readIdleTimes = 50;
 
-    public ServerHandler(DataManager dataManager, MessageHandlerManager messageHandlerManager) {
-        this.dataManager = dataManager;
+    public ServerHandler(HeartbeatService heartbeatService, MessageHandlerManager messageHandlerManager) {
+        this.heartbeatService = heartbeatService;
         this.messageHandlerManager = messageHandlerManager;
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
-        cause.printStackTrace();
-        messageHandlerManager.safeDisconnect(ctx);
+        //cause.printStackTrace();
+        heartbeatService.safeDisconnect(ctx);
         log.error("客户端关闭，断开连接");
         ctx.channel().close();
     }
 
     /**
-     * 接收到请求，将请求分发到对应的handler执行
+     * 接收到请求，将请求分发到对应的service执行
      * @param ctx
      * @param request
      * @throws Exception
@@ -53,7 +53,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     /**
-     * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过五十次，发起关闭连接请求
+     * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过50次，发起关闭连接请求
      * @param ctx
      * @param evt
      * @throws Exception
@@ -66,7 +66,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
             log.info(ctx.channel().remoteAddress() + "读空闲，累计次数" + readIdleTimes);
         }
         if(readIdleTimes >= Max_readIdleTimes){
-            messageHandlerManager.HeartbeatDisconnect(ctx);
+            heartbeatService.disconnect(ctx);
             readIdleTimes=0;
         }
     }

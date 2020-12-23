@@ -1,6 +1,6 @@
 package com.zkw.springboot.controller;
 
-import com.zkw.springboot.service.SseService;
+import com.zkw.springboot.service.impl.SseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,10 +15,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 public class SseController {
 
-    private final SseService sseService;
+    private final SseServiceImpl sseService;
 
     @Autowired
-    public SseController(SseService sseService) {
+    public SseController(SseServiceImpl sseService) {
         this.sseService = sseService;
     }
 
