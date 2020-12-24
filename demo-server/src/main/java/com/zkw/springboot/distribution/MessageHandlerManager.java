@@ -1,10 +1,8 @@
 package com.zkw.springboot.distribution;
 
 import com.zkw.springboot.protocol.MessageType;
-import com.zkw.springboot.service.HeartbeatService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,8 +20,7 @@ import java.util.Map;
 @Component
 @Data
 public class MessageHandlerManager {
-    @Autowired
-    private HeartbeatService heartbeatService;
+
     private Map<MessageType, Method> methodMap = new HashMap<>();
     private Map<MessageType, Object> beanMap = new HashMap<>();
 
