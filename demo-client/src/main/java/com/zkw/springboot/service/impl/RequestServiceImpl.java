@@ -28,11 +28,11 @@ public class RequestServiceImpl implements RequestService {
     SseService sseService;
 
     @Override
-    public void refresh(ChannelHandlerContext ctx, Message response) {
-        log.info(response.getDescription());
+    public void refresh(ChannelHandlerContext ctx, Message request) {
+        log.info(request.getDescription());
         Map<Integer, MapInfo> mapInfoMap = clientService.getMapInfoMap();
-        User user = response.getUser();
-        if(!mapInfoMap.get(user.getMapId()).getUsers().containsKey(user.getAccount())){
+        User user = request.getUser();
+        if(!mapInfoMap.get(user.getMapId()).getUsermap().containsKey(user.getAccount())){
             mapInfoMap.get(user.getMapId()).enterUser(user);
         }else {
             mapInfoMap.get(user.getMapId()).exitUser(user);
@@ -42,18 +42,18 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void disconnect(ChannelHandlerContext ctx, Message response) {
-        log.info(response.getDescription());
-        clientService.setMapInfoMap(response.getMapInfoMap());
-        sseService.disconnect(response.getDescription());
+    public void disconnect(ChannelHandlerContext ctx, Message request) {
+        log.info(request.getDescription());
+        clientService.setMapInfoMap(request.getMapInfoMap());
+        sseService.disconnect(request.getDescription());
     }
 
     @Override
-    public void changeMap(ChannelHandlerContext ctx, Message response) {
+    public void changeMap(ChannelHandlerContext ctx, Message request) {
         Map<Integer, MapInfo> mapInfoMap = clientService.getMapInfoMap();
-        User user = response.getUser();
-        if(response.getOldMapId()!=null){
-            mapInfoMap.get(response.getOldMapId()).exitUser(user);
+        User user = request.getUser();
+        if(request.getOldMapId()!=null){
+            mapInfoMap.get(request.getOldMapId()).exitUser(user);
         }
         mapInfoMap.get(user.getMapId()).enterUser(user);
         clientService.setMapInfoMap(mapInfoMap);

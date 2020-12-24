@@ -2,7 +2,6 @@ package com.zkw.springboot.bean;
 
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,32 +38,38 @@ public class MapInfo implements Serializable {
      */
     private Map<String,User> usermap=new HashMap<>();
 
-    /**
-     * 地图元素的JSON格式
-     */
-    private String jsonPath;
+    public MapInfo(){}
 
-    public Map<String, User> getUsers() {
-        return usermap;
+    public MapInfo(Integer id,Integer positionX,Integer positionY,String jsonPath){
+        this.id = id;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.paths = JSON.parseObject(jsonPath, int[][].class);
+
     }
 
+    /**
+     * 玩家进入地图
+     * @param user
+     */
     public void enterUser(User user){
         usermap.put(user.getAccount(),user);
     }
 
-    public boolean containUser(User user){
-        return usermap.containsKey(user.getAccount());
-    }
-
+    /**
+     * 玩家退出地图
+     * @param user
+     * @return
+     */
     public boolean exitUser(User user){
         return usermap.remove(user.getAccount())!=null;
     }
 
+    /**
+     * 玩家数
+     * @return
+     */
     public int getUserCount(){
         return usermap.size();
-    }
-
-    public int[][] getPath() {
-        return JSON.parseObject(jsonPath,int[][].class);
     }
 }

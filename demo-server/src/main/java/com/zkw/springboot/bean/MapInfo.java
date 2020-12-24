@@ -1,7 +1,5 @@
 package com.zkw.springboot.bean;
 
-import com.alibaba.excel.annotation.ExcelIgnore;
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -21,60 +19,60 @@ public class MapInfo implements Serializable {
     /**
      * 地图id
      */
-    @ExcelProperty("地图ID")
     private Integer id;
 
     /**
      * 地图出生点的X坐标
      */
-    @ExcelProperty("出生点坐标X")
     private Integer positionX;
 
     /**
      * 地图出生点的Y坐标
      */
-    @ExcelProperty("出生点坐标Y")
     private Integer positionY;
 
     /**
      * 地图元素，1为障碍物
      */
-    @ExcelIgnore
     private int[][] paths;
 
     /**
      * 地图中的玩家
      */
-    @ExcelIgnore
     private Map<String,User> usermap=new HashMap<>();
 
-    /**
-     * 地图元素的JSON格式
-     */
-    @ExcelProperty("地图元素")
-    private String jsonPath;
+    public MapInfo(){}
 
-    public Map<String, User> getUsers() {
-        return usermap;
+    public MapInfo(Integer id,Integer positionX,Integer positionY,String jsonPath){
+        this.id = id;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.paths = JSON.parseObject(jsonPath, int[][].class);
+
     }
 
+    /**
+     * 玩家进入地图
+     * @param user
+     */
     public void enterUser(User user){
         usermap.put(user.getAccount(),user);
     }
 
-    public boolean containUser(User user){
-        return usermap.containsKey(user.getAccount());
-    }
-
+    /**
+     * 玩家退出地图
+     * @param user
+     * @return
+     */
     public boolean exitUser(User user){
         return usermap.remove(user.getAccount())!=null;
     }
 
+    /**
+     * 玩家数
+     * @return
+     */
     public int getUserCount(){
         return usermap.size();
-    }
-
-    public int[][] getPath() {
-        return JSON.parseObject(jsonPath,int[][].class);
     }
 }

@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             response1.setDescription("其他人尝试登录你的账号，请重新登录");
             try {
                 channel.writeAndFlush(response1).sync();
-                channel.close();
+                channel.close().sync();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -179,7 +179,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean move(User user,String direction, MapInfo mapInfo){
-        int[][] path = mapInfo.getPath();
+        int[][] path = mapInfo.getPaths();
         Integer positionY = user.getPositionY();
         Integer positionX = user.getPositionX();
         switch (direction){
