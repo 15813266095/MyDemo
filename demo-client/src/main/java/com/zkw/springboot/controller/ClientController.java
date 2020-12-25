@@ -1,5 +1,6 @@
 package com.zkw.springboot.controller;
 
+import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
@@ -10,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 @Controller
 public class ClientController {
@@ -31,9 +34,9 @@ public class ClientController {
             model.addAttribute("msg",message.getDescription());
             return "index";
         }
-        model.addAttribute("user",message.getUser());
+        model.addAttribute("user",(User)message.map.get("user"));
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapInfoMap());
+        model.addAttribute("maps",(Map<Integer, MapInfo>)message.map.get("mapInfoMap"));
         return "homepage";
     }
 
@@ -47,27 +50,27 @@ public class ClientController {
             model.addAttribute("msg",message.getDescription());
             return "index";
         }
-        model.addAttribute("user",message.getUser());
+        model.addAttribute("user",(User)message.map.get("user"));
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapInfoMap());
+        model.addAttribute("maps",(Map<Integer, MapInfo>)message.map.get("mapInfoMap"));
         return "homepage";
     }
 
     @PostMapping(value = "/operator",params="move")
     public String move(User user, @RequestParam(name="move") String direction, Model model){
         Message message = service.move(direction,user);
-        model.addAttribute("user",message.getUser());
+        model.addAttribute("user",(User)message.map.get("user"));
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapInfoMap());
+        model.addAttribute("maps",(Map<Integer, MapInfo>)message.map.get("mapInfoMap"));
         return "homepage";
     }
 
     @PostMapping(value = "/operator",params="changeScenes")
     public String changeScenes(User user,@RequestParam(name="changeScenes")Integer mapid,Model model){
         Message message = service.changeMap(user,mapid);
-        model.addAttribute("user",message.getUser());
+        model.addAttribute("user",(User)message.map.get("user"));
         model.addAttribute("msg",message.getDescription());
-        model.addAttribute("maps",message.getMapInfoMap());
+        model.addAttribute("maps",(Map<Integer, MapInfo>)message.map.get("mapInfoMap"));
         return "homepage";
     }
 

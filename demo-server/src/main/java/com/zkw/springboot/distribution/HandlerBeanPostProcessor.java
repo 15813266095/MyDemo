@@ -26,21 +26,21 @@ public class HandlerBeanPostProcessor implements BeanPostProcessor {
 
     @SneakyThrows
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Method[] methods = bean.getClass().getMethods();
+        Method[] methods = bean.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if(method.isAnnotationPresent(HandlerAnno.class)){
                 messageHandlerManager.getMethodMap().put(method.getAnnotation(HandlerAnno.class).messageType(),method);
                 messageHandlerManager.getBeanMap().put(method.getAnnotation(HandlerAnno.class).messageType(),bean);
             }
             if(method.isAnnotationPresent(ResourceAnno.class)){
-                Field field= bean.getClass().getField("fileName");
+                Field field= bean.getClass().getDeclaredField("fileName");
                 field.setAccessible(true);
                 String fileName = (String)field.get(bean);
                 Class<?> bean1 = method.getAnnotation(ResourceAnno.class).bean();
-                Class<?> listener = method.getAnnotation(ResourceAnno.class).listener();
-                ReadListener newListener = (ReadListener)listener.newInstance();
+                ReadListener newListener = (ReadListener)method.getAnnotation(ResourceAnno.class).listener().newInstance();
                 EasyExcel.read(fileName, bean1, newListener).sheet().doRead();
-                Object list = newListener.getClass().getMethod("setMap").invoke(newListener);
+                Object list = newListener.getClass().getMethod("getList").invoke(newListener);
+                method.setAccessible(true);
                 method.invoke(bean, list);
             }
         }

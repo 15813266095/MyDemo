@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkw.springboot.dao.EquipmentMapper">
+    <resultMap id="BaseEResultMap" type="com.zkw.springboot.bean.Equipment">
+        <id column="equipment_id" jdbcType="INTEGER" property="equipmentId" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, equipment_id
+    </sql>
+
+    <select id="findAll" resultMap="BaseEResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_equipment
+    </select>
+
+    <select id="findEquipmentByUserId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select equipment_id from t_equipment where user_id = #{user_id,jdbcType=VARCHAR}
+    </select>
+</mapper>

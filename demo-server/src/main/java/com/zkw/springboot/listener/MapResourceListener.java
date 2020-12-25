@@ -2,7 +2,6 @@ package com.zkw.springboot.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.zkw.springboot.annotation.GetResource;
 import com.zkw.springboot.resource.MapResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ public class MapResourceListener extends AnalysisEventListener<MapResource> {
         LOGGER.info("地图数据解析完成！");
     }
 
-    @GetResource
     public List<MapResource> getList(){
         return list;
     }

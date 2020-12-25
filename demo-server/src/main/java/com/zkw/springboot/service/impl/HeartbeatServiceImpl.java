@@ -34,7 +34,7 @@ public class HeartbeatServiceImpl implements HeartbeatService {
             return;
         }
 
-        String account=null;
+        String account = null;
         for (String s : userCache.getUserChannelMap().keySet()) {
             if(userCache.getUserChannelMap().get(s).equals(ctx.channel())){
                 account=s;
@@ -44,7 +44,7 @@ public class HeartbeatServiceImpl implements HeartbeatService {
         sendToAll.setMessageType(MessageType.REFRESH);
         User user = userCache.getConnectedUserMap().get(account);
         sendToAll.setDescription(user.getUsername()+"异常下线");
-        sendToAll.setUser(user);
+        sendToAll.map.put("user",user);
         broadcastService.sendMessageToAll(account,sendToAll);
 
         safeDisconnect(ctx);

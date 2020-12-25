@@ -29,13 +29,13 @@ public class MapInfoServiceImpl implements MapInfoService {
 
     @Override
     public void changeMap(ChannelHandlerContext ctx, Message request) {
-        User user = request.getUser();
+        User user = (User) request.map.get("user");;
         Integer mapId = user.getMapId();//用户要去的地图id
-        Integer oldMapId = request.getOldMapId();//用户原本所在的地图id
+        Integer oldMapId = (Integer) request.map.get("oldMapId");//用户原本所在的地图id
 
         if (mapId==oldMapId) {
             Message response = new Message();
-            response.setUser(user);
+            response.map.put("user",user);
             response.setMessageType(MessageType.ERROR);
             response.setDescription("已经在这地图里了");
             ctx.writeAndFlush(response);
@@ -51,16 +51,16 @@ public class MapInfoServiceImpl implements MapInfoService {
 
         Message messageToAll = new Message();
         messageToAll.setMessageType(MessageType.CHANGEMAP);
-        messageToAll.setOldMapId(oldMapId);
-        messageToAll.setUser(user);
+        messageToAll.map.put("oldMapId",oldMapId);
+        messageToAll.map.put("user",user);
         messageToAll.setDescription(user.getUsername()+"去地图"+user.getMapId()+"了");
         broadcastService.sendMessageToAll(user.getAccount(),messageToAll);
 
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
-        response.setMapInfoMap(mapInfoCache.getMapInfoMap());
+        response.map.put("mapInfoMap",mapInfoCache.getMapInfoMap());
         response.setDescription("当前角色地图为：地图"+mapId);
-        response.setUser(user);
+        response.map.put("user",user);
         ctx.writeAndFlush(response);
     }
 }

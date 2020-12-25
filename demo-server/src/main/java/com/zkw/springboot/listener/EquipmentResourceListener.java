@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class EquipmentResourceListener extends AnalysisEventListener<EquipmentResource> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapResourceListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EquipmentResourceListener.class);
 
     private List<EquipmentResource> list = new ArrayList();
 

@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
     private int port;
 
     private Channel channel;
-    private BlockingQueue<Message> queue = new LinkedBlockingQueue<>(1);
+    private final BlockingQueue<Message> queue = new LinkedBlockingQueue<>(1);
     private Map<Integer,MapInfo> mapInfoMap;
 
     @Override
@@ -70,11 +69,11 @@ public class ClientServiceImpl implements ClientService {
 
             Message request = new Message();
             request.setMessageType(MessageType.LOGIN);
-            request.setUser(user);
+            request.map.put("user",user);
             channel.writeAndFlush(request);
             try {
                 response = queue.poll(10, TimeUnit.SECONDS);
-                mapInfoMap =response.getMapInfoMap();
+                mapInfoMap = (Map)response.map.get("mapInfoMap");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -86,13 +85,13 @@ public class ClientServiceImpl implements ClientService {
     public Message move(String direction, User user){
         if(isActive()){
             Message request = new Message();
-            request.setDirection(direction);
+            request.map.put("direction",direction);
             request.setMessageType(MessageType.MOVE);
-            request.setUser(user);
+            request.map.put("user",user);
             try {
                 channel.writeAndFlush(request);
                 Message response = queue.poll(3, TimeUnit.SECONDS);
-                response.setMapInfoMap(mapInfoMap);
+                response.map.put("mapInfoMap",mapInfoMap);
                 return response;
             }catch (Exception e){
                 e.printStackTrace();
@@ -100,7 +99,7 @@ public class ClientServiceImpl implements ClientService {
         }
         Message response = new Message();
         response.setMessageType(MessageType.ERROR);
-        response.setMapInfoMap(mapInfoMap);
+        response.map.put("mapInfoMap",mapInfoMap);
         return response;
     }
 
@@ -110,16 +109,16 @@ public class ClientServiceImpl implements ClientService {
         if(isActive()){
             Message request = new Message();
             request.setMessageType(MessageType.CHANGEMAP);
-            request.setUser(user);
-            request.setOldMapId(oldMapId);
+            request.map.put("user",user);
+            request.map.put("oldMapId",oldMapId);
             try {
                 channel.writeAndFlush(request);
                 Message response = queue.poll(3, TimeUnit.SECONDS);
                 if(response.getMessageType()==MessageType.ERROR){
-                    response.setMapInfoMap(mapInfoMap);
+                    response.map.put("mapInfoMap",mapInfoMap);
                     return response;
                 }
-                mapInfoMap=response.getMapInfoMap();
+                mapInfoMap=(Map)response.map.get("mapInfoMap");
                 return response;
             }catch (Exception e){
                 e.printStackTrace();
@@ -127,14 +126,14 @@ public class ClientServiceImpl implements ClientService {
         }
         Message response = new Message();
         response.setMessageType(MessageType.ERROR);
-        response.setMapInfoMap(mapInfoMap);
+        response.map.put("mapInfoMap",mapInfoMap);
         return response;
     }
 
     public void disconnect(User user) {
         if(isActive()){
             Message request = new Message();
-            request.setUser(user);
+            request.map.put("user",user);
             request.setMessageType(MessageType.DISCONNECT);
             try {
                 channel.writeAndFlush(request).sync();
@@ -153,12 +152,12 @@ public class ClientServiceImpl implements ClientService {
             user.setMapId(1);
             user.setPositionX(0);
             user.setPositionY(0);
-            request.setUser(user);
+            request.map.put("user",user);
             request.setMessageType(MessageType.REGISTER);
             try {
                 channel.writeAndFlush(request).sync();
                 response = queue.poll(3, TimeUnit.SECONDS);
-                mapInfoMap =response.getMapInfoMap();
+                mapInfoMap = (Map) response.map.get("mapInfoMap");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

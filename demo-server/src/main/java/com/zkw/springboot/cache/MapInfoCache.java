@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author zhangkewei
  * @date 2020/12/23 12:50
- * @desc 配置中读取的地图信息缓存
+ * @desc 在配置中读取的地图信息缓存
  */
 @Component
 public class MapInfoCache {
 
     /**
-     * 地图的路径
+     * 地图配置的路径
      */
     @Value("${demoserver.resources.map}")
     private String fileName;
@@ -39,15 +39,17 @@ public class MapInfoCache {
 
 
     @ResourceAnno(bean = MapResource.class, listener = MapResourceListener.class)
-    public void setMap(List<MapResource> mapResources){
+    private void setMap(Object o){
+        mapInfoMap = new ConcurrentHashMap<>();
+        List<MapResource> mapResources=(List<MapResource>)o;
         for (MapResource mapResource : mapResources) {
             mapInfoMap.put(mapResource.getId(), new MapInfo(mapResource.getId(),mapResource.getPositionX(),mapResource.getPositionY(),mapResource.getJsonPath()));
         }
     }
 
-    /**
-     * 在构造此类之后执行该方法，用easyexcel工具获取excel表中的地图数据
-     */
+//    /**
+//     * 在构造此类之后执行该方法，用easyexcel工具获取excel表中的地图数据
+//     */
 //    @PostConstruct
 //    public void init() {
 //        mapInfoMap = new ConcurrentHashMap<>();

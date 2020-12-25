@@ -38,6 +38,15 @@ public class User implements Serializable {
      */
     private Integer mapId;
 
+    /**
+     * 角色的装备
+     */
+    private Equipment equipment;
+
+    public User(){
+
+    }
+
     public String getAccount() {
         return account;
     }
@@ -84,6 +93,14 @@ public class User implements Serializable {
 
     public void setMapId(Integer mapId) {
         this.mapId = mapId;
+    }
+
+    public Equipment getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
     }
 
     public String getArea(){

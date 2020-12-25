@@ -2,9 +2,11 @@ package com.zkw.springboot.service.impl;
 
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
+import com.zkw.springboot.cache.EquipmentCache;
 import com.zkw.springboot.cache.MapInfoCache;
-import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.cache.UserCache;
+import com.zkw.springboot.dao.EquipmentMapper;
+import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import com.zkw.springboot.service.BroadcastService;
@@ -32,10 +34,14 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private BroadcastService broadcastService;
+    @Autowired
+    private EquipmentCache equipmentCache;
+    @Autowired
+    private EquipmentMapper equipmentMapper;
 
     @Override
     public void login(ChannelHandlerContext ctx, Message request) {
-        User user = request.getUser();
+        User user = (User) request.map.get("user");
         User user1 = userMapper.selectByPrimaryKey(user.getAccount());
         Message response = new Message();
 
@@ -49,7 +55,7 @@ public class UserServiceImpl implements UserService {
             Channel channel = userCache.getUserChannelMap().remove(user.getAccount());
 
             Message response1 = new Message();
-            response1.setUser(connectUser);
+            response1.map.put("user",connectUser);
             response1.setMessageType(MessageType.DISCONNECT);
             response1.setDescription("其他人尝试登录你的账号，请重新登录");
             try {
@@ -61,8 +67,8 @@ public class UserServiceImpl implements UserService {
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
-            messageToAll.setUser(user1);
-            messageToAll.setDescription(user1.getUsername()+"下线了");
+            messageToAll.map.put("user",user1);
+            messageToAll.setDescription(user1.getUsername()+"异常下线了");
             broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
 
             response.setMessageType(MessageType.ERROR);
@@ -72,19 +78,26 @@ public class UserServiceImpl implements UserService {
         /**
          * 用户登录的处理
          */
-        else if(user1!=null&&user!=null&&user.getPassword().equals(user1.getPassword())){
+        else if(user1!=null&&user.getPassword().equals(user1.getPassword())){
             mapInfoCache.getMapInfoMap().get(user1.getMapId()).enterUser(user1);
             userCache.getConnectedUserMap().put(user1.getAccount(),user1);
             userCache.getUserChannelMap().put(user.getAccount(), ctx.channel());
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
-            messageToAll.setUser(user1);
+            messageToAll.map.put("user",user1);
             messageToAll.setDescription(user1.getUsername()+"上线了");
             broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
 
-            response.setMapInfoMap(mapInfoCache.getMapInfoMap());
-            response.setUser(user1);
+            Integer equipmentId = equipmentMapper.findEquipmentByUserId(user1.getAccount());
+            if(equipmentId!=null){
+                user1.setEquipment(equipmentCache.getEquipmentMap().get(equipmentId));
+            }else {
+                user1.setEquipment(null);
+            }
+
+            response.map.put("mapInfoMap",mapInfoCache.getMapInfoMap());
+            response.map.put("user",user1);
             response.setMessageType(MessageType.SUCCESS);
             response.setDescription("登录成功!");
         }
@@ -96,19 +109,21 @@ public class UserServiceImpl implements UserService {
             response.setMessageType(MessageType.ERROR);
             response.setDescription("登陆失败,密码错误或账号不存在");
         }
+
         ctx.writeAndFlush(response);
+
     }
 
     @Override
     public void disconnect(ChannelHandlerContext ctx, Message request) {
-        User user = request.getUser();
+        User user = (User) request.map.get("user");
         userMapper.updateByPrimaryKeySelective(user);
         mapInfoCache.getMapInfoMap().get(user.getMapId()).exitUser(user);//将角色从地图里删除
         userCache.getConnectedUserMap().remove(user.getAccount());
 
         Message messageToAll = new Message();
         messageToAll.setMessageType(MessageType.REFRESH);
-        messageToAll.setUser(user);
+        messageToAll.map.put("user",user);
         messageToAll.setDescription(user.getUsername()+"下线了");
         broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
 
@@ -124,16 +139,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void move(ChannelHandlerContext ctx, Message request) {
-        User user = request.getUser();
+        User user = (User) request.map.get("user");
         Message response = new Message();
-        boolean f = move(user,request.getDirection(), mapInfoCache.getMapInfoMap().get(user.getMapId()));
+        boolean f = move(user,(String) request.map.get("direction"), mapInfoCache.getMapInfoMap().get(user.getMapId()));
         if(f){
             response.setMessageType(MessageType.SUCCESS);
-            response.setUser(user);
-            response.setDescription("\n角色移动了，方向为 "+request.getDirection()+ " ，当前角色位置为："+user.getArea());
+            response.map.put("user",user);
+            response.setDescription("\n角色移动了，方向为 " + request.map.get("direction") + " ，当前角色位置为："+user.getArea());
         }else{
             response.setMessageType(MessageType.ERROR);
-            response.setUser(user);
+            response.map.put("user",user);
             response.setDescription("有障碍物或在边界，无法移动");
         }
         ctx.writeAndFlush(response);
@@ -141,37 +156,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(ChannelHandlerContext ctx, Message request) {
-        User user = userMapper.selectByPrimaryKey(request.getUser().getAccount());
+        User user = (User) request.map.get("user");
         Message response = new Message();
-        if(user!=null){
+        if(userMapper.selectByPrimaryKey(user.getAccount())!=null){
             response.setMessageType(MessageType.ERROR);
             response.setDescription("账号重复");
         }else{
-            userMapper.insertSelective(request.getUser());
-            mapInfoCache.getMapInfoMap().get(request.getUser().getMapId()).enterUser(request.getUser());
+            mapInfoCache.getMapInfoMap().get(user.getMapId()).enterUser(user);
             userCache.getConnectedUserMap().put(user.getAccount(),user);
             userCache.getUserChannelMap().put(user.getAccount(), ctx.channel());
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
-            messageToAll.setUser(user);
+            messageToAll.map.put("user",user);
             messageToAll.setDescription(user.getUsername()+"上线了");
             broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
 
-            response.setMapInfoMap(mapInfoCache.getMapInfoMap());
+            response.map.put("mapInfoMap",mapInfoCache.getMapInfoMap());
             response.setMessageType(MessageType.SUCCESS);
-            response.setUser(request.getUser());
+            response.map.put("user",user);
             response.setDescription("注册成功！自动登录");
+
+            userMapper.insertSelective(user);
         }
         ctx.writeAndFlush(response);
     }
 
     @Override
     public void get(ChannelHandlerContext ctx, Message request) {
-        User user = userMapper.selectByPrimaryKey(request.getUser().getAccount());
+        User user = userMapper.selectByPrimaryKey(((User)request.map.get("user")).getAccount());
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
-        response.setUser(user);
+        response.map.put("user",user);
         response.setDescription("\n角色名为：" +user.getUsername()+
                 "\n当前角色位置为："+user.getArea()+
                 "\n当前角色地图在：map"+user.getMapId());

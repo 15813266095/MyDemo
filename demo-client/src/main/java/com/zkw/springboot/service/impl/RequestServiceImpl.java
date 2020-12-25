@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * @author zhangkewei
  * @date 2020/12/23 16:19
- * @desc
+ * @desc 处理服务端的请求
  */
 @Slf4j
 @Service
@@ -31,7 +31,7 @@ public class RequestServiceImpl implements RequestService {
     public void refresh(ChannelHandlerContext ctx, Message request) {
         log.info(request.getDescription());
         Map<Integer, MapInfo> mapInfoMap = clientService.getMapInfoMap();
-        User user = request.getUser();
+        User user = (User) request.map.get("user");
         if(!mapInfoMap.get(user.getMapId()).getUsermap().containsKey(user.getAccount())){
             mapInfoMap.get(user.getMapId()).enterUser(user);
         }else {
@@ -44,16 +44,16 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void disconnect(ChannelHandlerContext ctx, Message request) {
         log.info(request.getDescription());
-        clientService.setMapInfoMap(request.getMapInfoMap());
+        clientService.setMapInfoMap((Map)request.map.get("mapInfoMap"));
         sseService.disconnect(request.getDescription());
     }
 
     @Override
     public void changeMap(ChannelHandlerContext ctx, Message request) {
         Map<Integer, MapInfo> mapInfoMap = clientService.getMapInfoMap();
-        User user = request.getUser();
-        if(request.getOldMapId()!=null){
-            mapInfoMap.get(request.getOldMapId()).exitUser(user);
+        User user = (User) request.map.get("user");
+        if(request.map.get("oldMapId")!=null){
+            mapInfoMap.get(request.map.get("oldMapId")).exitUser(user);
         }
         mapInfoMap.get(user.getMapId()).enterUser(user);
         clientService.setMapInfoMap(mapInfoMap);

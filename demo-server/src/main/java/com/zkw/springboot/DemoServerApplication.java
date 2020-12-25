@@ -1,5 +1,6 @@
 package com.zkw.springboot;
 
+import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.netty.Server;
 import io.netty.channel.ChannelFuture;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DemoServerApplication implements CommandLineRunner {
     @Autowired
     private Server server;
+    @Autowired
+    private UserMapper mapper;
     @Value("${demoserver.hostname}")
     private String hostname;
     @Value("${demoserver.port}")
