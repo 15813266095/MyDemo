@@ -11,10 +11,12 @@
 
         <span>角色名称：</span><input type="text" th:value="*{username}" name="username" readonly><br>
 
-        <span>角色坐标：</span><input type="text" value="" th:value="*{positionX}" name="positionX" style="width:30px;" readonly> ,
+        <span>角色坐标：</span><input type="text" th:value="*{positionX}" name="positionX" style="width:30px;" readonly> ,
         <input type="text" value="" th:value="*{positionY}" name="positionY" style="width:30px;" readonly><br>
 
-        <span>角色地图：</span><input type="text" value="" th:value="*{mapId}" name="mapId" readonly><br>
+        <span>角色装备：</span><input type="text" th:value="*{equipmentName}" name="equipmentName" readonly><br>
+
+        <span>角色地图：</span><input type="text" th:value="*{mapId}" name="mapId" readonly><br>
 
         <button type="submit" name="move" value="forward" th:text="前"></button>
         <button type="submit" name="move" value="backward" th:text="后"></button>
@@ -23,17 +25,21 @@
 
         <button th:each="id,mapInfo:${maps}" type="submit" name="changeScenes" th:value="${id.getKey()}" th:text="'地图'+${id.getKey()}"></button><br>
 
-        <button type="submit" name="disconnect" th:text="断开连接"></button><br><br>
+        <button type="submit" name="disconnect" th:text="断开连接"></button><br>
 
-        <label th:utext="${msg}+'<br>'"></label>
+        <label th:text="${msg}"></label><br>
 
         <th:block th:each="id,mapInfo:${maps}">
-            <label th:id="${id.getKey()}" th:text="'地图'+${id.getKey()}+'人数：'+${maps.get(id.getKey()).getUsermap().size()}"></label><br>
+            <label th:id="${id.getKey()}" th:text="'地图'+${id.getKey()}+'人数：'+${maps.get(id.getKey()).getUserMap().size()}"></label><br>
         </th:block>
     </form>
 </body>
 
 <script type="application/javascript">
+    window.onbeforeunload=function(){
+        alert("离开吗")
+    }
+
     if (!!window.EventSource) {
         const eventSource = new EventSource("/sse");
         eventSource.addEventListener("message", function(e) {

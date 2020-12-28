@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.Map;
 /**
  * @author zhangkewei
  * @date 2020/12/17 14:39
- * @desc
+ * @desc Sse工具，实现从服务端向客户端发送信息
  */
 @Service
 @Slf4j

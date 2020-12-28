@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangkewei
@@ -39,7 +39,7 @@ public class MapInfo implements Serializable {
     /**
      * 地图中的玩家
      */
-    private Map<String,User> usermap=new HashMap<>();
+    private Map<String,User> userMap=new ConcurrentHashMap<>();
 
     public MapInfo(){}
 
@@ -56,7 +56,7 @@ public class MapInfo implements Serializable {
      * @param user
      */
     public void enterUser(User user){
-        usermap.put(user.getAccount(),user);
+        userMap.put(user.getAccount(),user);
     }
 
     /**
@@ -65,7 +65,7 @@ public class MapInfo implements Serializable {
      * @return
      */
     public boolean exitUser(User user){
-        return usermap.remove(user.getAccount())!=null;
+        return userMap.remove(user.getAccount())!=null;
     }
 
     /**
@@ -73,6 +73,6 @@ public class MapInfo implements Serializable {
      * @return
      */
     public int getUserCount(){
-        return usermap.size();
+        return userMap.size();
     }
 }

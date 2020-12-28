@@ -36,11 +36,11 @@ public class Server {
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private Channel channel;
 
-    @Value("${demoserver.readerIdleTime}")
+    @Value("${demoServer.readerIdleTime}")
     long readerIdleTime;
-    @Value("${demoserver.writerIdleTime}")
+    @Value("${demoServer.writerIdleTime}")
     long writerIdleTime;
-    @Value("${demoserver.allIdleTime}")
+    @Value("${demoServer.allIdleTime}")
     long allIdleTime;
     /**
      * 配置服务器信息，开启服务器

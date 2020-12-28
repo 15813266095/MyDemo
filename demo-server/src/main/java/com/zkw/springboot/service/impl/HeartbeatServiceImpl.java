@@ -1,10 +1,10 @@
 package com.zkw.springboot.service.impl;
 
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.cache.MapInfoCache;
-import com.zkw.springboot.cache.UserCache;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
+import com.zkw.springboot.resource.MapInfoManager;
+import com.zkw.springboot.resource.UserManager;
 import com.zkw.springboot.service.BroadcastService;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,27 +22,27 @@ import org.springframework.stereotype.Service;
 public class HeartbeatServiceImpl implements HeartbeatService {
 
     @Autowired
-    private UserCache userCache;
+    private UserManager userManager;
     @Autowired
-    private MapInfoCache mapInfoCache;
+    private MapInfoManager mapInfoManager;
     @Autowired
     private BroadcastService broadcastService;
 
     @Override
     public void disconnect(ChannelHandlerContext ctx) {
-        if(!userCache.getUserChannelMap().containsValue(ctx.channel())){
+        if(!userManager.getUserChannelMap().containsValue(ctx.channel())){
             return;
         }
 
         String account = null;
-        for (String s : userCache.getUserChannelMap().keySet()) {
-            if(userCache.getUserChannelMap().get(s).equals(ctx.channel())){
+        for (String s : userManager.getUserChannelMap().keySet()) {
+            if(userManager.getUserChannelMap().get(s).equals(ctx.channel())){
                 account=s;
             }
         }
         Message sendToAll = new Message();
         sendToAll.setMessageType(MessageType.REFRESH);
-        User user = userCache.getConnectedUserMap().get(account);
+        User user = userManager.getConnectedUserMap().get(account);
         sendToAll.setDescription(user.getUsername()+"异常下线");
         sendToAll.map.put("user",user);
         broadcastService.sendMessageToAll(account,sendToAll);
@@ -62,19 +62,19 @@ public class HeartbeatServiceImpl implements HeartbeatService {
 
     public void safeDisconnect(ChannelHandlerContext ctx){
         String account = null;
-        if(userCache.getUserChannelMap().size()==0){
+        if(userManager.getUserChannelMap().size()==0){
             return;
         }
-        for(String key: userCache.getUserChannelMap().keySet()){
-            if(userCache.getUserChannelMap().get(key).equals(ctx.channel())){
+        for(String key: userManager.getUserChannelMap().keySet()){
+            if(userManager.getUserChannelMap().get(key).equals(ctx.channel())){
                 account=key;
             }
         }
         if(account!=null){
-            User user = userCache.getConnectedUserMap().get(account);
-            mapInfoCache.getMapInfoMap().get(user.getMapId()).exitUser(user);
-            userCache.getConnectedUserMap().remove(account);
+            User user = userManager.getConnectedUserMap().get(account);
+            mapInfoManager.getMapInfoMap().get(user.getMapId()).exitUser(user);
+            userManager.getConnectedUserMap().remove(account);
         }
-        userCache.getUserChannelMap().remove(ctx.channel());
+        userManager.getUserChannelMap().remove(ctx.channel());
     }
 }

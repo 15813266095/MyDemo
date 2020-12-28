@@ -32,7 +32,7 @@ public class RequestServiceImpl implements RequestService {
         log.info(request.getDescription());
         Map<Integer, MapInfo> mapInfoMap = clientService.getMapInfoMap();
         User user = (User) request.map.get("user");
-        if(!mapInfoMap.get(user.getMapId()).getUsermap().containsKey(user.getAccount())){
+        if(!mapInfoMap.get(user.getMapId()).getUserMap().containsKey(user.getAccount())){
             mapInfoMap.get(user.getMapId()).enterUser(user);
         }else {
             mapInfoMap.get(user.getMapId()).exitUser(user);

@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 /**
  * @author zhangkewei
  * @date 2020/12/22 12:05
- * @desc 回调类，负责扫描容器中的类，将有注解的类的方法按照类型存入MethodMap中，同时把对应的对象存入BeanMap中，便于invoke
+ * @desc 回调类，负责扫描容器中的类，将有注解的类的方法按照类型存入MethodMap中，同时把对应的对象存入BeanMap中。
  */
 @Component
 public class HandlerBeanPostProcessor implements BeanPostProcessor {

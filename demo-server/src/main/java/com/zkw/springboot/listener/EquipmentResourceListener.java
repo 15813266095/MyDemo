@@ -2,7 +2,7 @@ package com.zkw.springboot.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.zkw.springboot.resource.EquipmentResource;
+import com.zkw.springboot.bean.EquipmentResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

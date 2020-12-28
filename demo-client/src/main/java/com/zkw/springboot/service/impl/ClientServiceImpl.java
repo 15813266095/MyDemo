@@ -51,15 +51,13 @@ public class ClientServiceImpl implements ClientService {
         queue.put(message);
     }
 
+    @Override
     public void start() {
         ChannelFuture channelFuture = client.start(localhost, port);
         this.channel=channelFuture.channel();
     }
 
-    public boolean isActive(){
-        return channel!=null;
-    }
-
+    @Override
     public Message login(String account, String password){
         Message response = null;
         if(isActive()){
@@ -82,6 +80,7 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    @Override
     public Message move(String direction, User user){
         if(isActive()){
             Message request = new Message();
@@ -103,6 +102,7 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    @Override
     public Message changeMap(User user, Integer mapid) {
         Integer oldMapId = user.getMapId();
         user.setMapId(mapid);
@@ -130,6 +130,7 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    @Override
     public void disconnect(User user) {
         if(isActive()){
             Message request = new Message();
@@ -145,6 +146,7 @@ public class ClientServiceImpl implements ClientService {
         log.info("断开连接");
     }
 
+    @Override
     public Message register(User user) {
         Message response = null;
         if(isActive()){
@@ -163,5 +165,9 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         return response;
+    }
+
+    private boolean isActive(){
+        return channel!=null;
     }
 }

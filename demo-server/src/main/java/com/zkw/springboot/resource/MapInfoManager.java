@@ -1,9 +1,9 @@
-package com.zkw.springboot.cache;
+package com.zkw.springboot.resource;
 
 import com.zkw.springboot.annotation.ResourceAnno;
 import com.zkw.springboot.bean.MapInfo;
+import com.zkw.springboot.bean.MapResource;
 import com.zkw.springboot.listener.MapResourceListener;
-import com.zkw.springboot.resource.MapResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,18 +16,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @desc 在配置中读取的地图信息缓存
  */
 @Component
-public class MapInfoCache {
+public class MapInfoManager {
 
     /**
      * 地图配置的路径
      */
-    @Value("${demoserver.resources.map}")
+    @Value("${demoServer.resources.map}")
     private String fileName;
 
     /**
      * 地图信息
      */
     private ConcurrentHashMap<Integer, MapInfo> mapInfoMap;
+
+    private List<MapResource> mapResources;
 
     /**
      * 获取地图信息

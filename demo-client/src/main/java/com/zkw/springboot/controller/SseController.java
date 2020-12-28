@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 /**
  * @author zhangkewei
  * @date 2020/12/17 14:39
- * @desc
+ * @desc Sse连接的controller
  */
 @RestController
 public class SseController {

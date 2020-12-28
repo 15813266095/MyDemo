@@ -1,4 +1,4 @@
-package com.zkw.springboot.resource;
+package com.zkw.springboot.bean;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;

@@ -41,7 +41,7 @@ public class User implements Serializable {
     /**
      * 角色的装备
      */
-    private Equipment equipment;
+    private String equipmentName;
 
     public User(){
 
@@ -95,12 +95,12 @@ public class User implements Serializable {
         this.mapId = mapId;
     }
 
-    public Equipment getEquipment() {
-        return equipment;
+    public String getEquipmentName() {
+        return equipmentName;
     }
 
-    public void setEquipment(Equipment equipment) {
-        this.equipment = equipment;
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
     }
 
     public String getArea(){

@@ -15,6 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
+/**
+ * @author zhangkewei
+ * @date 2020/12/22 16:40
+ * @desc 客户端启动类
+ */
 @Slf4j
 @Component
 public class Client {

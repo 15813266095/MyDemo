@@ -7,7 +7,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * @author zhangkewei
+ * @date 2020/12/22 16:40
+ * @desc 自定义的handler
+ */
 @Slf4j
 public class ClientHandler extends SimpleChannelInboundHandler<Message> {
 
@@ -23,10 +27,10 @@ public class ClientHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         //cause.printStackTrace();
         log.error("服务器异常，断开连接");
-        ctx.close().sync();
+        ctx.channel().close();
     }
 
     @Override

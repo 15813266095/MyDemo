@@ -1,10 +1,10 @@
-package com.zkw.springboot.cache;
+package com.zkw.springboot.resource;
 
 import com.zkw.springboot.annotation.ResourceAnno;
 import com.zkw.springboot.bean.Equipment;
+import com.zkw.springboot.bean.EquipmentResource;
 import com.zkw.springboot.dao.EquipmentMapper;
 import com.zkw.springboot.listener.EquipmentResourceListener;
-import com.zkw.springboot.resource.EquipmentResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,12 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @desc 在配置中读取的装备信息缓存
  */
 @Component
-public class EquipmentCache {
+public class EquipmentManager {
 
     /**
      * 地图配置的路径
      */
-    @Value("${demoserver.resources.equipment}")
+    @Value("${demoServer.resources.equipment}")
     private String fileName;
 
     @Autowired
@@ -63,4 +63,5 @@ public class EquipmentCache {
 //            equipmentMap.put(equipmentResource.getId(),new Equipment(equipmentResource.getId(), equipmentResource.getDamage(), equipmentResource.getName(),123));
 //        }
 //    }
+
 }

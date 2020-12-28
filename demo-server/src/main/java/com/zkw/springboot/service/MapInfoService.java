@@ -10,9 +10,17 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public interface MapInfoService {
     /**
-     * 处理切换地图请求
+     * 处理退出地图的请求
+     * @param ctx
+     * @param request
+     * @return
+     */
+    boolean userExit(ChannelHandlerContext ctx, Message request);
+
+    /**
+     * 处理进入地图的请求
      * @param ctx
      * @param request
      */
-    void changeMap(ChannelHandlerContext ctx, Message request);
+    void userEnter(ChannelHandlerContext ctx, Message request);
 }

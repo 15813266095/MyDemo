@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author zhangkewei
  * @date 2020/12/23 15:24
- * @desc
+ * @desc 客户端的外观类，用于将任务分发到对应服务中
  */
 @Component
 public class ClientFacade {
