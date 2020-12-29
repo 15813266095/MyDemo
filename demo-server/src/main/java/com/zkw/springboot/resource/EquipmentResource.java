@@ -2,7 +2,7 @@ package com.zkw.springboot.resource;
 
 import com.zkw.springboot.annotation.ResourceAnno;
 import com.zkw.springboot.bean.Equipment;
-import com.zkw.springboot.bean.EquipmentResource;
+import com.zkw.springboot.bean.EquipmentExcel;
 import com.zkw.springboot.dao.EquipmentMapper;
 import com.zkw.springboot.listener.EquipmentResourceListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @desc 在配置中读取的装备信息缓存
  */
 @Component
-public class EquipmentManager {
+public class EquipmentResource {
 
     /**
      * 地图配置的路径
@@ -39,17 +39,17 @@ public class EquipmentManager {
      * 查找数据库中装备对应的角色，并构建equipmentMap
      * @param o
      */
-    @ResourceAnno(bean = EquipmentResource.class, listener = EquipmentResourceListener.class)
+    @ResourceAnno(bean = EquipmentExcel.class, listener = EquipmentResourceListener.class)
     private void setMap(Object o){
         equipmentMap = new ConcurrentHashMap<>();
-        List<EquipmentResource> equipmentResources = (List<EquipmentResource>)o;
+        List<EquipmentExcel> equipmentExcels = (List<EquipmentExcel>)o;
         List<Equipment> equipments = equipmentMapper.findAll();
-        for (int i = 0; i < equipmentResources.size(); i++) {
-            EquipmentResource equipmentResource = equipmentResources.get(i);
+        for (int i = 0; i < equipmentExcels.size(); i++) {
+            EquipmentExcel equipmentExcel = equipmentExcels.get(i);
             Equipment equipment = equipments.get(i);
-            equipment.setName(equipmentResource.getName());
-            equipment.setDamage(equipmentResource.getDamage());
-            equipmentMap.put(equipmentResource.getId(),equipment);
+            equipment.setName(equipmentExcel.getName());
+            equipment.setDamage(equipmentExcel.getDamage());
+            equipmentMap.put(equipmentExcel.getId(),equipment);
         }
     }
 

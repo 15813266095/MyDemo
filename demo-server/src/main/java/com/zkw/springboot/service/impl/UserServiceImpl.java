@@ -1,14 +1,14 @@
 package com.zkw.springboot.service.impl;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
+import com.zkw.springboot.cache.UseCache;
 import com.zkw.springboot.dao.EquipmentMapper;
 import com.zkw.springboot.dao.UserMapper;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
-import com.zkw.springboot.resource.EquipmentManager;
-import com.zkw.springboot.resource.MapInfoManager;
-import com.zkw.springboot.resource.UserManager;
+import com.zkw.springboot.resource.EquipmentResource;
 import com.zkw.springboot.service.BroadcastService;
 import com.zkw.springboot.service.UserService;
 import io.netty.channel.Channel;
@@ -16,6 +16,9 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author zhangkewei
@@ -27,15 +30,15 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserManager userManager;
+    private UseCache useCache;
     @Autowired
-    private MapInfoManager mapInfoManager;
+    private Cache<Integer, MapInfo> caffeineCache;
     @Autowired
     private UserMapper userMapper;
     @Autowired
     private BroadcastService broadcastService;
     @Autowired
-    private EquipmentManager equipmentManager;
+    private EquipmentResource equipmentResource;
     @Autowired
     private EquipmentMapper equipmentMapper;
 
@@ -44,15 +47,15 @@ public class UserServiceImpl implements UserService {
         User user = (User) request.map.get("user");
         User user1 = userMapper.selectByPrimaryKey(user.getAccount());
         Message response = new Message();
-
+        ConcurrentMap<Integer,MapInfo> mapInfoMap = caffeineCache.asMap();
         /**
          * 用户已经登录过的处理
          */
-        if(userManager.getConnectedUserMap().containsKey(user.getAccount())){
-            User connectUser = userManager.getConnectedUserMap().get(user.getAccount());
-            mapInfoManager.getMapInfoMap().get(connectUser.getMapId()).exitUser(connectUser);
-            userManager.getConnectedUserMap().remove(connectUser.getAccount());
-            Channel channel = userManager.getUserChannelMap().remove(user.getAccount());
+        if(useCache.getConnectedUserMap().containsKey(user.getAccount())){
+            User connectUser = useCache.getConnectedUserMap().get(user.getAccount());
+            mapInfoMap.get(connectUser.getMapId()).exitUser(connectUser);
+            useCache.getConnectedUserMap().remove(connectUser.getAccount());
+            Channel channel = useCache.getUserChannelMap().remove(user.getAccount());
 
             Message response1 = new Message();
             response1.map.put("user",connectUser);
@@ -79,9 +82,9 @@ public class UserServiceImpl implements UserService {
          * 用户登录的处理
          */
         else if(user1!=null&&user.getPassword().equals(user1.getPassword())){
-            mapInfoManager.getMapInfoMap().get(user1.getMapId()).enterUser(user1);
-            userManager.getConnectedUserMap().put(user1.getAccount(),user1);
-            userManager.getUserChannelMap().put(user.getAccount(), ctx.channel());
+            mapInfoMap.get(user1.getMapId()).enterUser(user1);
+            useCache.getConnectedUserMap().put(user1.getAccount(),user1);
+            useCache.getUserChannelMap().put(user.getAccount(), ctx.channel());
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
@@ -91,12 +94,13 @@ public class UserServiceImpl implements UserService {
 
             Integer equipmentId = equipmentMapper.findEquipmentByUserId(user1.getAccount());
             if(equipmentId!=null){
-                user1.setEquipmentName(equipmentManager.getEquipmentMap().get(equipmentId).getName());
+                user1.setEquipmentName(equipmentResource.getEquipmentMap().get(equipmentId).getName());
             }else {
                 user1.setEquipmentName("无");
             }
-
-            response.map.put("mapInfoMap", mapInfoManager.getMapInfoMap());
+            ConcurrentMap<Integer, MapInfo> tempMap = new ConcurrentHashMap<>();
+            tempMap.putAll(mapInfoMap);
+            response.map.put("mapInfoMap", tempMap);
             response.map.put("user",user1);
             response.setMessageType(MessageType.SUCCESS);
             response.setDescription("登录成功!");
@@ -109,17 +113,16 @@ public class UserServiceImpl implements UserService {
             response.setMessageType(MessageType.ERROR);
             response.setDescription("登陆失败,密码错误或账号不存在");
         }
-        log.info("登录处理完成");
         ctx.writeAndFlush(response);
-
     }
 
     @Override
     public void disconnect(ChannelHandlerContext ctx, Message request) {
+        ConcurrentMap<Integer, MapInfo> mapInfoMap = caffeineCache.asMap();
         User user = (User) request.map.get("user");
         userMapper.updateByPrimaryKeySelective(user);
-        mapInfoManager.getMapInfoMap().get(user.getMapId()).exitUser(user);//将角色从地图里删除
-        userManager.getConnectedUserMap().remove(user.getAccount());
+        mapInfoMap.get(user.getMapId()).exitUser(user);//将角色从地图里删除
+        useCache.getConnectedUserMap().remove(user.getAccount());
 
         Message messageToAll = new Message();
         messageToAll.setMessageType(MessageType.REFRESH);
@@ -127,7 +130,7 @@ public class UserServiceImpl implements UserService {
         messageToAll.setDescription(user.getUsername()+"下线了");
         broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
 
-        userManager.getUserChannelMap().remove(user.getAccount());
+        useCache.getUserChannelMap().remove(user.getAccount());
         log.info("玩家数据保存成功");
         log.info("客户端断开连接");
         try {
@@ -139,9 +142,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void move(ChannelHandlerContext ctx, Message request) {
+        ConcurrentMap<Integer, MapInfo> mapInfoMap = caffeineCache.asMap();
         User user = (User) request.map.get("user");
         Message response = new Message();
-        boolean f = move(user,(String) request.map.get("direction"), mapInfoManager.getMapInfoMap().get(user.getMapId()));
+        boolean f = move(user,(String) request.map.get("direction"), mapInfoMap.get(user.getMapId()));
         if(f){
             response.setMessageType(MessageType.SUCCESS);
             response.map.put("user",user);
@@ -156,15 +160,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(ChannelHandlerContext ctx, Message request) {
+        ConcurrentMap<Integer, MapInfo> mapInfoMap = caffeineCache.asMap();
         User user = (User) request.map.get("user");
         Message response = new Message();
         if(userMapper.selectByPrimaryKey(user.getAccount())!=null){
             response.setMessageType(MessageType.ERROR);
             response.setDescription("账号重复");
         }else{
-            mapInfoManager.getMapInfoMap().get(user.getMapId()).enterUser(user);
-            userManager.getConnectedUserMap().put(user.getAccount(),user);
-            userManager.getUserChannelMap().put(user.getAccount(), ctx.channel());
+            mapInfoMap.get(user.getMapId()).enterUser(user);
+            useCache.getConnectedUserMap().put(user.getAccount(),user);
+            useCache.getUserChannelMap().put(user.getAccount(), ctx.channel());
 
             Message messageToAll = new Message();
             messageToAll.setMessageType(MessageType.REFRESH);
@@ -172,7 +177,9 @@ public class UserServiceImpl implements UserService {
             messageToAll.setDescription(user.getUsername()+"上线了");
             broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
 
-            response.map.put("mapInfoMap", mapInfoManager.getMapInfoMap());
+            ConcurrentMap<Integer, MapInfo> tempMap = new ConcurrentHashMap<>();
+            tempMap.putAll(mapInfoMap);
+            response.map.put("mapInfoMap", tempMap);
             response.setMessageType(MessageType.SUCCESS);
             response.map.put("user",user);
             response.setDescription("注册成功！自动登录");
@@ -194,7 +201,7 @@ public class UserServiceImpl implements UserService {
         ctx.writeAndFlush(response);
     }
 
-    public boolean move(User user,String direction, MapInfo mapInfo){
+    private boolean move(User user,String direction, MapInfo mapInfo){
         int[][] path = mapInfo.getPaths();
         Integer positionY = user.getPositionY();
         Integer positionX = user.getPositionX();

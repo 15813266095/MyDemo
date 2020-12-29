@@ -28,7 +28,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        //cause.printStackTrace();
+        cause.printStackTrace();
         log.error("服务器异常，断开连接");
         ctx.channel().close();
     }

@@ -9,7 +9,7 @@ import lombok.Data;
  * @desc 地图静态资源
  */
 @Data
-public class MapResource {
+public class MapInfoExcel {
     /**
      * 地图id
      */

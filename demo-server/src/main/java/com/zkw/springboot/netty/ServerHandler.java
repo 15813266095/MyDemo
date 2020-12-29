@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.distribution.MessageHandlerManager;
+import com.zkw.springboot.facade.MessageHandlerManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,8 +8,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
-
-import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -31,6 +29,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
         this.messageHandlerManager = messageHandlerManager;
     }
 
+    /**
+     * 捕获异常，打印错误
+     * @param ctx
+     * @param cause
+     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
         //cause.printStackTrace();
@@ -43,10 +46,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      * 接收到请求，将请求分发到对应的service执行
      * @param ctx
      * @param request
-     * @throws Exception
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Message request) throws InvocationTargetException, IllegalAccessException {
+    protected void channelRead0(ChannelHandlerContext ctx, Message request) {
         log.info("收到客户端消息，消息类型为"+request.getMessageType());
         messageHandlerManager.invokeMethod(request.getMessageType(),ctx,request);
         readIdleTimes=0;//重置读空闲的计数
@@ -56,10 +58,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      * 心跳检测，每10秒记录一次读空闲次数，当读空闲超过50次，发起关闭连接请求
      * @param ctx
      * @param evt
-     * @throws Exception
      */
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         IdleStateEvent event = (IdleStateEvent)evt;
         if(event.state() == IdleState.READER_IDLE){
             readIdleTimes++; // 读空闲的计数加1

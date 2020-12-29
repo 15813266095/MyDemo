@@ -9,21 +9,31 @@ import java.io.Serializable;
  */
 public enum MessageType implements Serializable {
     //注册请求
-    REGISTER,
+    REGISTER(ExecutorType.USER),
     //登录请求
-    LOGIN,
+    LOGIN(ExecutorType.USER),
     //查看角色信息请求
-    GET,
+    GET(ExecutorType.USER),
     //角色移动请求
-    MOVE,
+    MOVE(ExecutorType.USER),
     //场景切换请求
-    CHANGEMAP,
+    CHANGEMAP(ExecutorType.MAP),
     //断开连接请求
-    DISCONNECT,
+    DISCONNECT(ExecutorType.USER),
     //操作成功
-    SUCCESS,
+    SUCCESS(ExecutorType.USER),
     //操作失败
-    ERROR,
+    ERROR(ExecutorType.USER),
     //刷新
-    REFRESH;
+    REFRESH(ExecutorType.USER);
+
+    private ExecutorType executorType;
+
+    MessageType(ExecutorType executorType) {
+        this.executorType = executorType;
+    }
+
+    public ExecutorType getPoolType() {
+        return executorType;
+    }
 }

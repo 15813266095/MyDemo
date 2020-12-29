@@ -1,9 +1,8 @@
-package com.zkw.springboot.resource;
+package com.zkw.springboot.cache;
 
 import com.zkw.springboot.bean.User;
 import io.netty.channel.Channel;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @desc 暂时缓存角色数据，包括在线角色数据和角色对应的channel
  */
 @Component
-public class UserManager {
+public class UseCache {
 
     /**
      * 在线玩家信息

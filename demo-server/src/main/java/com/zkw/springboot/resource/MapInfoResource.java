@@ -1,14 +1,15 @@
 package com.zkw.springboot.resource;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import com.zkw.springboot.annotation.ResourceAnno;
 import com.zkw.springboot.bean.MapInfo;
-import com.zkw.springboot.bean.MapResource;
+import com.zkw.springboot.bean.MapInfoExcel;
 import com.zkw.springboot.listener.MapResourceListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangkewei
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @desc 在配置中读取的地图信息缓存
  */
 @Component
-public class MapInfoManager {
+public class MapInfoResource {
 
     /**
      * 地图配置的路径
@@ -27,25 +28,17 @@ public class MapInfoManager {
     /**
      * 地图信息
      */
-    private ConcurrentHashMap<Integer, MapInfo> mapInfoMap;
+    private List<MapInfoExcel> mapInfoExcels;
 
-    private List<MapResource> mapResources;
-
-    /**
-     * 获取地图信息
-     * @return
-     */
-    public ConcurrentHashMap<Integer, MapInfo> getMapInfoMap() {
-        return mapInfoMap;
-    }
+    @Autowired
+    private Cache<Integer, MapInfo> caffeineCache;
 
 
-    @ResourceAnno(bean = MapResource.class, listener = MapResourceListener.class)
+    @ResourceAnno(bean = MapInfoExcel.class, listener = MapResourceListener.class)
     private void setMap(Object o){
-        mapInfoMap = new ConcurrentHashMap<>();
-        List<MapResource> mapResources=(List<MapResource>)o;
-        for (MapResource mapResource : mapResources) {
-            mapInfoMap.put(mapResource.getId(), new MapInfo(mapResource.getId(),mapResource.getPositionX(),mapResource.getPositionY(),mapResource.getJsonPath()));
+        mapInfoExcels = (List<MapInfoExcel>)o;
+        for (MapInfoExcel mapInfoExcel : mapInfoExcels) {
+            caffeineCache.asMap().put(mapInfoExcel.getId(), new MapInfo(mapInfoExcel.getId(), mapInfoExcel.getPositionX(), mapInfoExcel.getPositionY(), mapInfoExcel.getJsonPath()));
         }
     }
 

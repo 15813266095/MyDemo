@@ -1,15 +1,18 @@
 package com.zkw.springboot.service.impl;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
-import com.zkw.springboot.resource.MapInfoManager;
 import com.zkw.springboot.service.BroadcastService;
 import com.zkw.springboot.service.MapInfoService;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author zhangkewei
@@ -20,11 +23,12 @@ import org.springframework.stereotype.Service;
 public class MapInfoServiceImpl implements MapInfoService {
 
     @Autowired
-    private MapInfoManager mapInfoManager;
+    private Cache<Integer, MapInfo> caffeineCache;
     @Autowired
     private BroadcastService broadcastService;
 
     public boolean userExit(ChannelHandlerContext ctx, Message request){
+        ConcurrentMap<Integer,MapInfo> mapInfoMap = caffeineCache.asMap();
         User user = (User) request.map.get("user");
         Integer mapId = user.getMapId();//用户要去的地图id
         Integer oldMapId = (Integer) request.map.get("oldMapId");//用户原本所在的地图id
@@ -36,15 +40,16 @@ public class MapInfoServiceImpl implements MapInfoService {
             ctx.writeAndFlush(response);
             return false;
         }
-        mapInfoManager.getMapInfoMap().get(oldMapId).exitUser(user);//旧地图删除用户
+        mapInfoMap.get(oldMapId).exitUser(user);//旧地图删除用户
         return true;
     }
 
     public void userEnter(ChannelHandlerContext ctx, Message request){
+        ConcurrentMap<Integer,MapInfo> mapInfoMap = caffeineCache.asMap();
         User user = (User) request.map.get("user");
         Integer mapId = user.getMapId();//用户要去的地图id
         Integer oldMapId = (Integer) request.map.get("oldMapId");//用户原本所在的地图id
-        MapInfo mapInfo = mapInfoManager.getMapInfoMap().get(mapId);
+        MapInfo mapInfo = mapInfoMap.get(mapId);
         user.setPositionX(mapInfo.getPositionX());
         user.setPositionY(mapInfo.getPositionY());
         mapInfo.enterUser(user);//新地图增加用户
@@ -58,7 +63,9 @@ public class MapInfoServiceImpl implements MapInfoService {
 
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);
-        response.map.put("mapInfoMap", mapInfoManager.getMapInfoMap());
+        ConcurrentMap<Integer, MapInfo> tempMap = new ConcurrentHashMap<>();
+        tempMap.putAll(mapInfoMap);
+        response.map.put("mapInfoMap", tempMap);
         response.setDescription("当前角色地图为：地图"+mapId);
         response.map.put("user",user);
         ctx.writeAndFlush(response);

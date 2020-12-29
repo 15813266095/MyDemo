@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.distribution.MessageHandlerManager;
+import com.zkw.springboot.facade.MessageHandlerManager;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -42,6 +42,7 @@ public class Server {
     long writerIdleTime;
     @Value("${demoServer.allIdleTime}")
     long allIdleTime;
+
     /**
      * 配置服务器信息，开启服务器
      * @param hostname

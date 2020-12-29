@@ -1,7 +1,7 @@
 package com.zkw.springboot.service.impl;
 
 import com.zkw.springboot.protocol.Message;
-import com.zkw.springboot.resource.UserManager;
+import com.zkw.springboot.cache.UseCache;
 import com.zkw.springboot.service.BroadcastService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BroadcastServiceImpl implements BroadcastService {
     @Autowired
-    UserManager userManager;
+    UseCache useCache;
 
     /**
      * 将消息发送给传入账号用户以外的在线用户
@@ -22,7 +22,7 @@ public class BroadcastServiceImpl implements BroadcastService {
      * @param message
      */
     public void sendMessageToAll(String account, Message message){
-        userManager.getUserChannelMap().forEach((k, v) -> {
+        useCache.getUserChannelMap().forEach((k, v) -> {
             if(account.equals(k)){
                 return;
             }

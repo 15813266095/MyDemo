@@ -9,7 +9,7 @@ import lombok.Data;
  * @desc
  */
 @Data
-public class EquipmentResource {
+public class EquipmentExcel {
     /**
      * 装备ID
      */
