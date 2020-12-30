@@ -8,6 +8,7 @@ import com.zkw.springboot.protocol.MessageType;
 import com.zkw.springboot.service.BroadcastService;
 import com.zkw.springboot.service.MapInfoService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,19 +21,28 @@ import java.util.concurrent.ConcurrentMap;
  * @desc 地图服务
  */
 @Service
+@Slf4j
 public class MapInfoServiceImpl implements MapInfoService {
 
     @Autowired
-    private Cache<Integer, MapInfo> caffeineCache;
+    private Cache<Integer, MapInfo> mapInfoCache;
+    @Autowired
+    private Cache<String, User> connectedUserCache;
     @Autowired
     private BroadcastService broadcastService;
 
+    /**
+     * 用户退出地图
+     * @param ctx
+     * @param request
+     * @return
+     */
     public boolean userExit(ChannelHandlerContext ctx, Message request){
-        ConcurrentMap<Integer,MapInfo> mapInfoMap = caffeineCache.asMap();
+        ConcurrentMap<Integer,MapInfo> mapInfoMap = mapInfoCache.asMap();
         User user = (User) request.map.get("user");
         Integer mapId = user.getMapId();//用户要去的地图id
         Integer oldMapId = (Integer) request.map.get("oldMapId");//用户原本所在的地图id
-        if (mapId==oldMapId) {
+        if (mapId.equals(oldMapId)) {
             Message response = new Message();
             response.map.put("user",user);
             response.setMessageType(MessageType.ERROR);
@@ -44,8 +54,13 @@ public class MapInfoServiceImpl implements MapInfoService {
         return true;
     }
 
+    /**
+     * 用户进入地图
+     * @param ctx
+     * @param request
+     */
     public void userEnter(ChannelHandlerContext ctx, Message request){
-        ConcurrentMap<Integer,MapInfo> mapInfoMap = caffeineCache.asMap();
+        ConcurrentMap<Integer,MapInfo> mapInfoMap = mapInfoCache.asMap();
         User user = (User) request.map.get("user");
         Integer mapId = user.getMapId();//用户要去的地图id
         Integer oldMapId = (Integer) request.map.get("oldMapId");//用户原本所在的地图id
@@ -53,6 +68,7 @@ public class MapInfoServiceImpl implements MapInfoService {
         user.setPositionX(mapInfo.getPositionX());
         user.setPositionY(mapInfo.getPositionY());
         mapInfo.enterUser(user);//新地图增加用户
+        connectedUserCache.asMap().put(user.getAccount(),user);
 
         Message messageToAll = new Message();
         messageToAll.setMessageType(MessageType.CHANGEMAP);
@@ -71,40 +87,4 @@ public class MapInfoServiceImpl implements MapInfoService {
         ctx.writeAndFlush(response);
     }
 
-//    @Override
-//    public void changeMap(ChannelHandlerContext ctx, Message request) {
-//        User user = (User) request.map.get("user");
-//        Integer mapId = user.getMapId();//用户要去的地图id
-//        Integer oldMapId = (Integer) request.map.get("oldMapId");//用户原本所在的地图id
-//
-//        if (mapId==oldMapId) {
-//            Message response = new Message();
-//            response.map.put("user",user);
-//            response.setMessageType(MessageType.ERROR);
-//            response.setDescription("已经在这地图里了");
-//            ctx.writeAndFlush(response);
-//            return;
-//        }
-//
-//        MapInfo mapInfo = mapInfoCache.getMapInfoMap().get(mapId);
-//        mapInfo.enterUser(user);//新地图增加用户
-//        mapInfoCache.getMapInfoMap().get(oldMapId).exitUser(user);//旧地图删除用户
-//
-//        user.setPositionX(mapInfo.getPositionX());
-//        user.setPositionY(mapInfo.getPositionY());
-//
-//        Message messageToAll = new Message();
-//        messageToAll.setMessageType(MessageType.CHANGEMAP);
-//        messageToAll.map.put("oldMapId",oldMapId);
-//        messageToAll.map.put("user",user);
-//        messageToAll.setDescription(user.getUsername()+"去地图"+user.getMapId()+"了");
-//        broadcastService.sendMessageToAll(user.getAccount(),messageToAll);
-//
-//        Message response = new Message();
-//        response.setMessageType(MessageType.SUCCESS);
-//        response.map.put("mapInfoMap",mapInfoCache.getMapInfoMap());
-//        response.setDescription("当前角色地图为：地图"+mapId);
-//        response.map.put("user",user);
-//        ctx.writeAndFlush(response);
-//    }
 }

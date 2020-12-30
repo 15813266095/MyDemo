@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author zhangkewei
  * @date 2020/12/22 16:40
- * @desc 提供调用逻辑方法用于反射调用
+ * @desc 分发管理器，负责将收到的请求按照类型，分发到对应的线程池，并执行对应的facade类中的方法
  */
 
 @Component

@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.facade.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageHandlerManager;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -27,19 +26,40 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class Server {
+
     @Autowired
     private HeartbeatService heartbeatService;
+
     @Autowired
     private MessageHandlerManager messageHandlerManager;
 
+    /**
+     * boss线程，负责接收客户端的消息，然后分配给工作线程执行
+     */
     private final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+
+    /**
+     * 工作线程，处理客户端的消息
+     */
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+
     private Channel channel;
 
+    /**
+     * 心跳读检测
+     */
     @Value("${demoServer.readerIdleTime}")
     long readerIdleTime;
+
+    /**
+     * 心跳写检测
+     */
     @Value("${demoServer.writerIdleTime}")
     long writerIdleTime;
+
+    /**
+     * 心跳读写检测
+     */
     @Value("${demoServer.allIdleTime}")
     long allIdleTime;
 

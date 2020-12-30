@@ -22,26 +22,51 @@ public class ClientFacade {
     @Autowired
     RequestService requestService;
 
+    /**
+     * 分发到请求成功逻辑
+     * @param ctx
+     * @param response
+     */
     @HandlerAnno(messageType = MessageType.SUCCESS)
     public void success(ChannelHandlerContext ctx, Message response){
         responseService.success(ctx,response);
     }
 
+    /**
+     * 分发到刷新逻辑
+     * @param ctx
+     * @param response
+     */
     @HandlerAnno(messageType = MessageType.REFRESH)
     public void refresh(ChannelHandlerContext ctx, Message response){
         requestService.refresh(ctx,response);
     }
 
+    /**
+     * 分发到错误处理逻辑
+     * @param ctx
+     * @param response
+     */
     @HandlerAnno(messageType = MessageType.ERROR)
     public void error(ChannelHandlerContext ctx, Message response){
         responseService.error(ctx,response);
     }
 
+    /**
+     * 分发到断开连接逻辑
+     * @param ctx
+     * @param response
+     */
     @HandlerAnno(messageType = MessageType.DISCONNECT)
     public void disconnect(ChannelHandlerContext ctx, Message response){
         requestService.disconnect(ctx,response);
     }
 
+    /**
+     * 分发到切换地图逻辑
+     * @param ctx
+     * @param response
+     */
     @HandlerAnno(messageType = MessageType.CHANGEMAP)
     public void changeMap(ChannelHandlerContext ctx, Message response){
         requestService.changeMap(ctx,response);

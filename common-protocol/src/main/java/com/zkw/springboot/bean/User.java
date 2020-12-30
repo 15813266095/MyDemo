@@ -104,7 +104,7 @@ public class User implements Serializable {
     }
 
     public String getArea(){
-        return "当前角色坐标为("+positionX+","+positionY+")";
+        return "当前角色坐标为 ( "+positionX+ " , " +positionY+" )";
     }
 
 }

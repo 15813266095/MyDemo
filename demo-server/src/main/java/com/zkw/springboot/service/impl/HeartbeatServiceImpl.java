@@ -3,16 +3,15 @@ package com.zkw.springboot.service.impl;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.zkw.springboot.bean.MapInfo;
 import com.zkw.springboot.bean.User;
-import com.zkw.springboot.cache.UseCache;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
 import com.zkw.springboot.service.BroadcastService;
 import com.zkw.springboot.service.HeartbeatService;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -25,27 +24,31 @@ import java.util.concurrent.ConcurrentMap;
 public class HeartbeatServiceImpl implements HeartbeatService {
 
     @Autowired
-    private UseCache useCache;
+    private Cache<String, User> connectedUserCache;
     @Autowired
-    private Cache<Integer, MapInfo> caffeineCache;
+    private Cache<String, Channel> userChannelCache;
+    @Autowired
+    private Cache<Integer, MapInfo> mapInfoCache;
     @Autowired
     private BroadcastService broadcastService;
 
     @Override
     public void disconnect(ChannelHandlerContext ctx) {
-        if(!useCache.getUserChannelMap().containsValue(ctx.channel())){
+        ConcurrentMap<String, User> connectedUserMap = connectedUserCache.asMap();
+        ConcurrentMap<String, Channel> userChannelMap = userChannelCache.asMap();
+        if(!userChannelMap.containsValue(ctx.channel())){
             return;
         }
 
         String account = null;
-        for (String s : useCache.getUserChannelMap().keySet()) {
-            if(useCache.getUserChannelMap().get(s).equals(ctx.channel())){
+        for (String s : userChannelMap.keySet()) {
+            if(userChannelMap.get(s).equals(ctx.channel())){
                 account=s;
             }
         }
         Message sendToAll = new Message();
         sendToAll.setMessageType(MessageType.REFRESH);
-        User user = useCache.getConnectedUserMap().get(account);
+        User user = connectedUserMap.get(account);
         sendToAll.setDescription(user.getUsername()+"异常下线");
         sendToAll.map.put("user",user);
         broadcastService.sendMessageToAll(account,sendToAll);
@@ -64,21 +67,24 @@ public class HeartbeatServiceImpl implements HeartbeatService {
     }
 
     public void safeDisconnect(ChannelHandlerContext ctx){
-        ConcurrentMap<Integer, MapInfo> mapInfoMap = caffeineCache.asMap();
+        ConcurrentMap<Integer, MapInfo> mapInfoMap = mapInfoCache.asMap();
+        ConcurrentMap<String, User> connectedUserMap = connectedUserCache.asMap();
+        ConcurrentMap<String, Channel> userChannelMap = userChannelCache.asMap();
+
         String account = null;
-        if(useCache.getUserChannelMap().size()==0){
+        if(connectedUserMap.size()==0){
             return;
         }
-        for(String key: useCache.getUserChannelMap().keySet()){
-            if(useCache.getUserChannelMap().get(key).equals(ctx.channel())){
+        for(String key: userChannelMap.keySet()){
+            if(userChannelMap.get(key).equals(ctx.channel())){
                 account=key;
             }
         }
         if(account!=null){
-            User user = useCache.getConnectedUserMap().get(account);
+            User user = connectedUserMap.get(account);
             mapInfoMap.get(user.getMapId()).exitUser(user);
-            useCache.getConnectedUserMap().remove(account);
+            connectedUserMap.remove(account);
         }
-        useCache.getUserChannelMap().remove(ctx.channel());
+        userChannelMap.remove(ctx.channel());
     }
 }

@@ -22,8 +22,4 @@ public class Equipment implements Serializable {
         this.name = name;
         this.userId = userId;
     }
-
-    public Equipment(){
-
-    }
 }

@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.facade.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageHandlerManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,10 +18,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
+    /**
+     * 心跳服务
+     */
     private HeartbeatService heartbeatService;
+
+    /**
+     * 分发管理器
+     */
     private MessageHandlerManager messageHandlerManager;
 
+    /**
+     * 读空闲计数
+     */
     private int readIdleTimes = 0;
+
+    /**
+     * 读空闲的最大次数
+     */
     private static final int Max_readIdleTimes = 50;
 
     public ServerHandler(HeartbeatService heartbeatService, MessageHandlerManager messageHandlerManager) {
@@ -43,7 +57,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     /**
-     * 接收到请求，将请求分发到对应的service执行
+     * netty接收请求，将请求分发到对应的facade执行
      * @param ctx
      * @param request
      */

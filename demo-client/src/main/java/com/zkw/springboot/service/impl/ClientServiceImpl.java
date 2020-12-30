@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * 用于发送请求和接收请求的Service
  */
-
 @Service
 @Slf4j
 public class ClientServiceImpl implements ClientService {
@@ -144,6 +143,23 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         log.info("断开连接");
+    }
+
+    @Override
+    public Message get(User user) {
+        Message response = null;
+        if(isActive()){
+            Message request = new Message();
+            request.map.put("user",user);
+            request.setMessageType(MessageType.GET);
+            try {
+                channel.writeAndFlush(request).sync();
+                response=queue.poll(3, TimeUnit.SECONDS);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return response;
     }
 
     @Override

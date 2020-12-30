@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * @author zhangkewei
  * @date 2020/12/16 15:39
- * @desc 用户类，包括账号、密码、用户名、坐标XY、所在地图id
+ * @desc 用户类
  */
 public class User implements Serializable {
     /**
@@ -103,8 +103,12 @@ public class User implements Serializable {
         this.equipmentName = equipmentName;
     }
 
+    /**
+     * 获取用户当前坐标
+     * @return
+     */
     public String getArea(){
-        return "当前角色坐标为("+positionX+","+positionY+")";
+        return "当前角色坐标为 ( "+positionX+ " , " +positionY+" )";
     }
 
 }

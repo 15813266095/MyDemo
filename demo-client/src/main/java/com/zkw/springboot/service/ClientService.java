@@ -72,4 +72,6 @@ public interface ClientService {
      * @return
      */
     Map<Integer, MapInfo> getMapInfoMap();
+
+    Message get(User user);
 }

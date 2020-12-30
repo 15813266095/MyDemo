@@ -31,28 +31,17 @@ public class MapInfoResource {
     private List<MapInfoExcel> mapInfoExcels;
 
     @Autowired
-    private Cache<Integer, MapInfo> caffeineCache;
+    private Cache<Integer, MapInfo> mapInfoCache;
 
-
+    /**
+     * 反射调用，传入读取出来的资源
+     * @param o
+     */
     @ResourceAnno(bean = MapInfoExcel.class, listener = MapResourceListener.class)
     private void setMap(Object o){
-        mapInfoExcels = (List<MapInfoExcel>)o;
+        this.mapInfoExcels = (List<MapInfoExcel>)o;
         for (MapInfoExcel mapInfoExcel : mapInfoExcels) {
-            caffeineCache.asMap().put(mapInfoExcel.getId(), new MapInfo(mapInfoExcel.getId(), mapInfoExcel.getPositionX(), mapInfoExcel.getPositionY(), mapInfoExcel.getJsonPath()));
+            mapInfoCache.asMap().put(mapInfoExcel.getId(), new MapInfo(mapInfoExcel.getId(), mapInfoExcel.getPositionX(), mapInfoExcel.getPositionY(), mapInfoExcel.getJsonPath()));
         }
     }
-
-//    /**
-//     * 在构造此类之后执行该方法，用easyexcel工具获取excel表中的地图数据
-//     */
-//    @PostConstruct
-//    public void init() {
-//        mapInfoMap = new ConcurrentHashMap<>();
-//        MapResourceListener mapResourceListener = new MapResourceListener();
-//        EasyExcel.read(fileName, MapResource.class, mapResourceListener).sheet().doRead();
-//        List<MapResource> mapResources = mapResourceListener.getList();
-//        for (MapResource mapResource : mapResources) {
-//            mapInfoMap.put(mapResource.getId(), new MapInfo(mapResource.getId(),mapResource.getPositionX(),mapResource.getPositionY(),mapResource.getJsonPath()));
-//        }
-//    }
 }

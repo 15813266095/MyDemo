@@ -11,9 +11,25 @@ import java.io.Serializable;
  */
 @Data
 public class Equipment implements Serializable {
+
+    /**
+     * 装备ID
+     */
     private int equipmentId;
+
+    /**
+     * 装备伤害
+     */
     private int damage;
+
+    /**
+     * 装备名称
+     */
     private String name;
+
+    /**
+     * 所属用户的用户id
+     */
     private String userId;
 
     public Equipment(int equipmentId, int damage, String name, String userId) {

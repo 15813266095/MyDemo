@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @author zhangkewei
  * @date 2020/12/24 12:39
- * @desc
+ * @desc 装备静态资源
  */
 @Data
 public class EquipmentExcel {

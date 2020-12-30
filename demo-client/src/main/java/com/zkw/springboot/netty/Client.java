@@ -28,6 +28,12 @@ public class Client {
     private final NioEventLoopGroup group = new NioEventLoopGroup();
     private Channel channel = null;
 
+    /**
+     * 启动netty服务，连接到对应地址的服务器
+     * @param host
+     * @param port
+     * @return
+     */
     public ChannelFuture start(String host,int port){
         ChannelFuture channelFuture = null;
         try {
@@ -57,6 +63,9 @@ public class Client {
         return channelFuture;
     }
 
+    /**
+     * 断开netty连接
+     */
     public void destroy(){
         if(channel != null) {
             channel.close();

@@ -33,7 +33,7 @@ public enum MessageType implements Serializable {
         this.executorType = executorType;
     }
 
-    public ExecutorType getPoolType() {
+    public ExecutorType getExecutorType() {
         return executorType;
     }
 }
