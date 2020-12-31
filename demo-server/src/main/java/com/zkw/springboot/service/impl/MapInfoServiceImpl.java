@@ -69,13 +69,7 @@ public class MapInfoServiceImpl implements MapInfoService {
         user.setPositionY(mapInfo.getPositionY());
         mapInfo.enterUser(user);//新地图增加用户
         connectedUserCache.asMap().put(user.getAccount(),user);
-
-        Message messageToAll = new Message();
-        messageToAll.setMessageType(MessageType.CHANGEMAP);
-        messageToAll.map.put("oldMapId",oldMapId);
-        messageToAll.map.put("user",user);
-        messageToAll.setDescription(user.getUsername()+"去地图"+user.getMapId()+"了");
-        broadcastService.sendMessageToAll(user.getAccount(),messageToAll);
+        broadcastService.changeMapToAll(user,oldMapId);
 
         Message response = new Message();
         response.setMessageType(MessageType.SUCCESS);

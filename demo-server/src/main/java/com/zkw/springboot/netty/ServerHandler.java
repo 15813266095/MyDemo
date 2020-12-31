@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.distribution.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageManager;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,7 +26,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     /**
      * 分发管理器
      */
-    private MessageHandlerManager messageHandlerManager;
+    private MessageManager messageManager;
 
     /**
      * 读空闲计数
@@ -38,9 +38,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     private static final int Max_readIdleTimes = 50;
 
-    public ServerHandler(HeartbeatService heartbeatService, MessageHandlerManager messageHandlerManager) {
+    public ServerHandler(HeartbeatService heartbeatService, MessageManager messageManager) {
         this.heartbeatService = heartbeatService;
-        this.messageHandlerManager = messageHandlerManager;
+        this.messageManager = messageManager;
     }
 
     /**
@@ -64,7 +64,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message request) {
         log.info("收到客户端消息，消息类型为"+request.getMessageType());
-        messageHandlerManager.invokeMethod(request.getMessageType(),ctx,request);
+        messageManager.invokeMethod(request.getMessageType(),ctx,request);
         readIdleTimes=0;//重置读空闲的计数
     }
 

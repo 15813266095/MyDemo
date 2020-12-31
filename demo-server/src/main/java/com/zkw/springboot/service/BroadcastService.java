@@ -1,6 +1,6 @@
 package com.zkw.springboot.service;
 
-import com.zkw.springboot.protocol.Message;
+import com.zkw.springboot.bean.User;
 
 /**
  * @author zhangkewei
@@ -9,9 +9,16 @@ import com.zkw.springboot.protocol.Message;
  */
 public interface BroadcastService{
     /**
-     * 将消息发送给除了自己的所有连接用户，由服务器主动发起
-     * @param account
-     * @param message
+     * 用户切换地图请求，通知其他在线用户
+     * @param user
+     * @param oldMapId
      */
-    void sendMessageToAll(String account, Message message);
+    void changeMapToAll(User user, Integer oldMapId);
+
+    /**
+     * 通知其他在线用户更新用户数据
+     * @param user
+     * @param description
+     */
+    void updateAll(User user, String description);
 }

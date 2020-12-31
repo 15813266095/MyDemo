@@ -1,11 +1,12 @@
-package com.zkw.springboot.distribution;
+package com.zkw.springboot.processor;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.zkw.springboot.annotation.HandlerAnno;
 import com.zkw.springboot.annotation.ResourceAnno;
 import com.zkw.springboot.annotation.ThreadPoolAnno;
-import com.zkw.springboot.threadManager.ThreadPoolManager;
+import com.zkw.springboot.distribution.MessageManager;
+import com.zkw.springboot.distribution.ThreadPoolManager;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class HandlerBeanPostProcessor implements BeanPostProcessor {
     private int keepAliveSeconds;
 
     @Autowired
-    private MessageHandlerManager messageHandlerManager;
+    private MessageManager messageManager;
     @Autowired
     private ThreadPoolManager threadPoolManager;
 
@@ -98,9 +99,10 @@ public class HandlerBeanPostProcessor implements BeanPostProcessor {
              * 根据标记了HandlerAnno注解的方法构造成Map
              */
             if(method.isAnnotationPresent(HandlerAnno.class)){
-                messageHandlerManager.getMethodMap().put(method.getAnnotation(HandlerAnno.class).messageType(),method);
-                messageHandlerManager.getBeanMap().put(method.getAnnotation(HandlerAnno.class).messageType(),bean);
+                messageManager.getMethodMap().put(method.getAnnotation(HandlerAnno.class).messageType(),method);
+                messageManager.getBeanMap().put(method.getAnnotation(HandlerAnno.class).messageType(),bean);
             }
+
             /**
              * 读取资源，构造成资源对象
              */

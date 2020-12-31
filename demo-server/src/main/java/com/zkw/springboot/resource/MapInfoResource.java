@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author zhangkewei
  * @date 2020/12/23 12:50
- * @desc 在配置中读取的地图信息缓存
+ * @desc 在配置中读取的地图信息
  */
 @Component
 public class MapInfoResource {

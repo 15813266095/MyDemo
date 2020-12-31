@@ -1,6 +1,6 @@
 package com.zkw.springboot.netty;
 
-import com.zkw.springboot.distribution.MessageHandlerManager;
+import com.zkw.springboot.distribution.MessageManager;
 import com.zkw.springboot.service.HeartbeatService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -31,7 +31,7 @@ public class Server {
     private HeartbeatService heartbeatService;
 
     @Autowired
-    private MessageHandlerManager messageHandlerManager;
+    private MessageManager messageManager;
 
     /**
      * boss线程，负责接收客户端的消息，然后分配给工作线程执行
@@ -84,7 +84,7 @@ public class Server {
                             pipeline.addLast(new ObjectDecoder(1024*1024,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                             pipeline.addLast(new ObjectEncoder());
                             pipeline.addLast(new IdleStateHandler(readerIdleTime,writerIdleTime,allIdleTime,TimeUnit.SECONDS));
-                            pipeline.addLast(new ServerHandler(heartbeatService, messageHandlerManager));
+                            pipeline.addLast(new ServerHandler(heartbeatService, messageManager));
                         }
                     });
             channelFuture = serverBootstrap.bind().sync();

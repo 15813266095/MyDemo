@@ -15,7 +15,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -64,7 +63,9 @@ public class UserServiceImpl implements UserService {
             mapInfoMap.get(connectUser.getMapId()).exitUser(connectUser);
             connectedUserMap.remove(connectUser.getAccount());
             Channel channel = userChannelMap.remove(user.getAccount());
-
+            /**
+             * 重复登陆，强制已经在线的用户退出
+             */
             Message response1 = new Message();
             response1.map.put("user",connectUser);
             response1.setMessageType(MessageType.DISCONNECT);
@@ -75,13 +76,13 @@ public class UserServiceImpl implements UserService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            Message messageToAll = new Message();
-            messageToAll.setMessageType(MessageType.REFRESH);
-            messageToAll.map.put("user",user1);
-            messageToAll.setDescription(user1.getUsername()+"异常下线了");
-            broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
-
+            /**
+             * 通知在线用户，该用户下线
+             */
+            broadcastService.updateAll(user1,user.getUsername() + "异常下线了");
+            /**
+             * 提示用户已经在线，登录失败
+             */
             response.setMessageType(MessageType.ERROR);
             response.setDescription("该账号已经在线，请重新登录");
         }
@@ -93,19 +94,22 @@ public class UserServiceImpl implements UserService {
             mapInfoMap.get(user1.getMapId()).enterUser(user1);
             connectedUserMap.put(user1.getAccount(),user1);
             userChannelMap.put(user.getAccount(), ctx.channel());
-
-            Message messageToAll = new Message();
-            messageToAll.setMessageType(MessageType.REFRESH);
-            messageToAll.map.put("user",user1);
-            messageToAll.setDescription(user1.getUsername()+"上线了");
-            broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
-
+            /**
+             * 通知所有在线用户，该用户上线
+             */
+            broadcastService.updateAll(user1, user1.getUsername() + "上线了");
+            /**
+             * 查询该用户是否有装备
+             */
             Integer equipmentId = equipmentMapper.findEquipmentByUserId(user1.getAccount());
             if(equipmentId!=null){
                 user1.setEquipmentName(equipmentCache.asMap().get(equipmentId).getName());
             }else {
                 user1.setEquipmentName("无");
             }
+            /**
+             * 发送登录成功消息
+             */
             ConcurrentMap<Integer, MapInfo> tempMap = new ConcurrentHashMap<>();
             tempMap.putAll(mapInfoMap);
             response.map.put("mapInfoMap", tempMap);
@@ -113,7 +117,6 @@ public class UserServiceImpl implements UserService {
             response.setMessageType(MessageType.SUCCESS);
             response.setDescription("登录成功!");
         }
-
         /**
          * 登录出错
          */
@@ -134,18 +137,20 @@ public class UserServiceImpl implements UserService {
         ConcurrentMap<Integer, MapInfo> mapInfoMap = mapInfoCache.asMap();
         ConcurrentMap<String, User> connectedUserMap = connectedUserCache.asMap();
         ConcurrentMap<String, Channel> userChannelMap = userChannelCache.asMap();
-
+        /**
+         * 删除用户缓存信息
+         */
         User user = (User) request.map.get("user");
         userMapper.updateByPrimaryKeySelective(user);
         mapInfoMap.get(user.getMapId()).exitUser(user);//将角色从地图里删除
         connectedUserMap.remove(user.getAccount());
-
-        Message messageToAll = new Message();
-        messageToAll.setMessageType(MessageType.REFRESH);
-        messageToAll.map.put("user",user);
-        messageToAll.setDescription(user.getUsername()+"下线了");
-        broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
-
+        /**
+         * 向所有在线用户发送该用户下线消息
+         */
+        broadcastService.updateAll(user, user.getUsername()+"下线了");
+        /**
+         * 删除该用户的channel
+         */
         userChannelMap.remove(user.getAccount());
         log.info("玩家数据保存成功");
         log.info("客户端断开连接");
@@ -200,13 +205,13 @@ public class UserServiceImpl implements UserService {
             mapInfoMap.get(user.getMapId()).enterUser(user);
             connectedUserMap.put(user.getAccount(),user);
             userChannelMap.put(user.getAccount(), ctx.channel());
-
-            Message messageToAll = new Message();
-            messageToAll.setMessageType(MessageType.REFRESH);
-            messageToAll.map.put("user",user);
-            messageToAll.setDescription(user.getUsername()+"上线了");
-            broadcastService.sendMessageToAll(user.getAccount(), messageToAll);
-
+            /**
+             * 通知所有在线用户，该用户上线
+             */
+            broadcastService.updateAll(user, user.getUsername()+"上线了");
+            /**
+             * 发送成功消息
+             */
             ConcurrentMap<Integer, MapInfo> tempMap = new ConcurrentHashMap<>();
             tempMap.putAll(mapInfoMap);
             response.map.put("mapInfoMap", tempMap);

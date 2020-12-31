@@ -32,6 +32,10 @@ public class HeartbeatServiceImpl implements HeartbeatService {
     @Autowired
     private BroadcastService broadcastService;
 
+    /**
+     * 断开连接的业务逻辑
+     * @param ctx
+     */
     @Override
     public void disconnect(ChannelHandlerContext ctx) {
         ConcurrentMap<String, User> connectedUserMap = connectedUserCache.asMap();
@@ -46,12 +50,8 @@ public class HeartbeatServiceImpl implements HeartbeatService {
                 account=s;
             }
         }
-        Message sendToAll = new Message();
-        sendToAll.setMessageType(MessageType.REFRESH);
         User user = connectedUserMap.get(account);
-        sendToAll.setDescription(user.getUsername()+"异常下线");
-        sendToAll.map.put("user",user);
-        broadcastService.sendMessageToAll(account,sendToAll);
+        broadcastService.updateAll(user,user.getUsername()+"异常下线");
 
         safeDisconnect(ctx);
         Message message = new Message();
@@ -66,6 +66,10 @@ public class HeartbeatServiceImpl implements HeartbeatService {
         }
     }
 
+    /**
+     * 断开前的缓存清理
+     * @param ctx
+     */
     public void safeDisconnect(ChannelHandlerContext ctx){
         ConcurrentMap<Integer, MapInfo> mapInfoMap = mapInfoCache.asMap();
         ConcurrentMap<String, User> connectedUserMap = connectedUserCache.asMap();

@@ -1,4 +1,4 @@
-package com.zkw.springboot.threadManager;
+package com.zkw.springboot.distribution;
 
 import com.zkw.springboot.protocol.ExecutorType;
 import org.springframework.stereotype.Component;

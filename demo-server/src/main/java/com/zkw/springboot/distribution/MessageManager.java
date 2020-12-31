@@ -4,7 +4,6 @@ import com.zkw.springboot.bean.User;
 import com.zkw.springboot.protocol.ExecutorType;
 import com.zkw.springboot.protocol.Message;
 import com.zkw.springboot.protocol.MessageType;
-import com.zkw.springboot.threadManager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,7 @@ import java.util.concurrent.Executor;
 @Slf4j
 @Component
 @Data
-public class MessageHandlerManager {
+public class MessageManager {
 
     /**
      * 线程池管理，负责分配线程池
